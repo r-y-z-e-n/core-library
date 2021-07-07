@@ -15,10 +15,14 @@ Creating New Configuration File
 $config = array(
     'mysql_database_config' =>
         [
-            'db_host'=>"YOUR DATABASE_HOST",
-            'db_name'=>"YOUR DATABASE_NAME",
-            'db_user'=>"YOUR DATABASE_USER",
-            'db_pass'=>"YOUR DATABASE_PASS"
+            'db_host'       => "YOUR_DATABASE_HOST",
+            'db_name'       => "YOUR_DATABASE_NAME",
+            'db_user'       => "YOUR_DATABASE_USER",
+            'db_pass'       => "YOUR_DATABASE_PASS",
+            'db_driver'	    => 'mysql',
+            'db_charset'	=> 'utf8',
+            'db_collation'	=> 'utf8_general_ci',
+            'db_prefix'	    => ''
         ],
     'encryption_method' =>
         [
