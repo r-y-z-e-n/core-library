@@ -2,20 +2,23 @@
 
 namespace Ryzen\CoreLibrary;
 
+use Ryzen\DbBuilder\DbBuilder;
+
 /**
  * @author razoo.choudhary@gmail.com
  * Class Ry_Zen
  * @package Ryzen\CoreLibrary
  */
+
 class Ry_Zen
 {
 
-    public \PDO $pdo;
+    public ?\PDO $pdo;
     public Auth $auth;
-    public Database $database;
+    public DbBuilder $dbBuilder;
     public Functions $function;
-    public static Ry_Zen $main;
 
+    public static Ry_Zen $main;
     public string $Root_DIR;
     public string $T_SESSION;
     public string $T_USERS;
@@ -37,12 +40,15 @@ class Ry_Zen
         $this->encMethod    =   $config['encryption_method']['encryptionMethod'];
         $this->T_USERS      =   $config['default_tables']['users'];
         $this->T_SESSION    =   $config['default_tables']['users_sessions'];
-        $this->database     =   new Database($config['mysql_database_config']);
-        $this->pdo          =   $this->database->connect();
+        $this->dbBuilder    =   new DbBuilder($config);
+        $this->pdo          =   $this->dbBuilder->pdo;
         $this->function     =   new Functions();
         $this->auth         =   new Auth();
     }
 
+    /*
+     * View Loader (returns view file)
+     * */
     public function Ry_Load_Page($pageURL = '')
     {
             global $ry;

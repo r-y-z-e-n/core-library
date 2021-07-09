@@ -11,17 +11,23 @@ use stdClass;
  * Class Functions
  * @package Ryzen\CoreLibrary
  */
+
 class Functions
 {
     protected Ry_Zen $main;
+
     /**
      * Functions constructor.
      */
+
     public function __construct()
     {
         $this->main =   Ry_Zen::$main;
     }
 
+    /*
+     * Secures your data string helps prevent malicious input
+     * */
     public function Ry_Secure($string, $br = true, $strip = 0)
     {
         $string = trim($string);
@@ -52,6 +58,9 @@ class Functions
         return str_replace('&amp;#', '&#', $string);
     }
 
+    /*
+     * String Cleaner
+     * */
     public function Ry_Clean_String($string)
     {
         return preg_replace("/&#?[a-z0-9]+;/i", "", $string);
@@ -61,11 +70,17 @@ class Functions
      * @throws Exception
      */
 
+    /*
+     * Generates Random 32 Byte String as CSRF Token
+     * */
     public function Ry_Generate_CSRF():string
     {
         return $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
     }
 
+    /*
+     * Matched the CSRF Token Provided With The Generated Once
+     * */
     public function Ry_Match_CSRF($token): bool
     {
         if (isset($_SESSION['csrf_token']) && $_SESSION['csrf_token'] !== '' && hash_equals($token, $_SESSION['csrf_token'])) {
@@ -78,10 +93,18 @@ class Functions
         }
     }
 
+    /*
+     * Redirects Page to the desired location
+     * */
     public function redirect($url)
     {
-        return header("Location:" . $this->Root_DIR. $url);
+        $redirect = 'Location:'.$this->main->Root_DIR.$url;
+        header($redirect);
     }
+
+    /*
+     * TypeCasts Object Associative Array
+     * */
     public function Ry_ObjectToArray($obj)
     {
         if (is_object($obj))
@@ -97,6 +120,9 @@ class Functions
         return $new;
     }
 
+    /*
+     * TypeCasts Array To Object
+     * */
     public function Ry_ArrayToObject($array): stdClass
     {
         $object = new stdClass();
@@ -111,6 +137,9 @@ class Functions
         return $object;
     }
 
+    /*
+     * Curls URL
+     * */
     public function Ry_Curl_Url($url)
     {
         if (empty($url)) {
@@ -130,6 +159,9 @@ class Functions
         return curl_exec($ch);
     }
 
+    /*
+     * Encrypts Your String into secured unreadable hash
+     * */
     public function Ry_Encrypt($data): string
     {
         $iv         = substr(sha1(mt_rand()), 0, 16);
@@ -143,6 +175,9 @@ class Functions
         return "$iv:$salt:$encryption";
     }
 
+    /*
+     * Decrypts the unreadable hash to readable string
+     * */
     public function Ry_Decrypt($encryptedData){
 
         $password       = sha1($this->main->password);
@@ -159,6 +194,9 @@ class Functions
         return $decryption;
     }
 
+    /*
+     * Strips Long Texts into Short Texts
+     * */
     public function Ry_Strip_Long_Text($string, $length): string{
         $string = strip_tags($string);
         if (strlen($string) > $length) {
@@ -172,6 +210,10 @@ class Functions
     /**
      * @throws Exception
      */
+
+    /*
+     * Time Structure
+     * */
     public function Ry_Time_Completed($datetime, $full = false): string{
         $now = new DateTime;
         $ago = new DateTime($datetime);
@@ -201,6 +243,9 @@ class Functions
         return $string ? implode(', ', $string) . ' ago' : 'just now';
     }
 
+    /*
+     * Returns the current browser information
+     * */
     public function Ry_Get_Browser(): array
     {
         $u_agent        = $_SERVER['HTTP_USER_AGENT'];
@@ -276,6 +321,9 @@ class Functions
         );
     }
 
+    /*
+     * Returns the IP address Of the user
+     * */
     public function Ry_Get_Ip_Address()
     {
         if (!empty($_SERVER['HTTP_X_FORWARDED']) && self::validate_ip($_SERVER['HTTP_X_FORWARDED'])) {
@@ -296,6 +344,9 @@ class Functions
         return $_SERVER['REMOTE_ADDR'];
     }
 
+    /*
+     * IP address Validator
+     * */
     public function validate_ip($ip): bool
     {
         if (strtolower($ip) === 'unknown')

@@ -1,3 +1,4 @@
 /vendor/
 /test/
 /core-php-library-structure/
+./src/Database.php

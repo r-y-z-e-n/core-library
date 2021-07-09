@@ -14,5 +14,7 @@
             "email": "52706390+razoo-choudhary@users.noreply.github.com"
         }
     ],
-    "require": {}
+    "require": {
+        "ryzen/db-builder": "^1.0"
+    }
 }

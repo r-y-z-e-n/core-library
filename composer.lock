@@ -4,8 +4,46 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b44a890c7345a7733617b1e18693af8a",
-    "packages": [],
+    "content-hash": "55cdfe99ac300b77888065a6253bfc19",
+    "packages": [
+        {
+            "name": "ryzen/db-builder",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/r-y-z-e-n/db-builder.git",
+                "reference": "72ce911b80cc760eeb0e0d73dfc6ee9ac4e38755"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/r-y-z-e-n/db-builder/zipball/72ce911b80cc760eeb0e0d73dfc6ee9ac4e38755",
+                "reference": "72ce911b80cc760eeb0e0d73dfc6ee9ac4e38755",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Ryzen\\DbBuilder\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Raju Choudhary",
+                    "email": "razoo.choudhary@gmail.com"
+                }
+            ],
+            "description": "Powerful, Optimized Query Builder For Your PHP projects",
+            "support": {
+                "issues": "https://github.com/r-y-z-e-n/db-builder/issues",
+                "source": "https://github.com/r-y-z-e-n/db-builder/tree/v1.0.0"
+            },
+            "time": "2021-07-07T20:15:35+00:00"
+        }
+    ],
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
