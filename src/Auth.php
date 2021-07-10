@@ -57,7 +57,7 @@ class Auth
                     $this->main->dbBuilder->table($this->main->T_SESSION)->where('id','=',$statement->id)->update(['platform_details' => $userBrowser]);
                 }
             }
-            return $statement->id;
+            return $statement->user_id;
         }
         return false;
     }
@@ -73,7 +73,7 @@ class Auth
         $hash       = sha1(rand(111111111, 999999999)) . md5(microtime()) . rand(11111111, 99999999) . md5(rand(5555, 9999));
         $query      = $this->main->dbBuilder->table($this->main->T_SESSION)->where('session_id',$hash)->delete();
 
-        if ($query) {
+        if ($hash) {
             $userBrowser        = json_encode($this->main->function->Ry_Get_Browser());
             $this->main->dbBuilder->table($this->main->T_SESSION)->where('platform_details',$userBrowser)->delete();
             $this->main->dbBuilder->table($this->main->T_SESSION)->insert(['user_id' => $user_id, 'session_id' => $hash, 'platform' => 'web', 'platform_details' => $userBrowser]);
