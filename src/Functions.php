@@ -75,7 +75,40 @@ class Functions
      * */
     public function Ry_Generate_CSRF():string
     {
-        return $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+        if(empty($_SESSION['csrf_token'])){
+
+            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+        }
+        return $_SESSION['csrf_token'];
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function Ry_hmac_create(string $string){
+
+        if(empty($_SESSION['csrf_token'])){
+            $token = $this->Ry_Generate_CSRF();
+        }else{
+            $token = $_SESSION['csrf_token'];
+        }
+        if(empty($string)){
+            return "Missing Parameter";
+        }
+        return hash_hmac('sha256', $string, $token);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function Ry_hmac_check(string $string, $token): bool
+    {
+
+        if(hash_equals($this->Ry_hmac_create($string), $token)){
+            return true;
+        }
+
+        return false;
     }
 
     /*
@@ -98,8 +131,7 @@ class Functions
      * */
     public function redirect($url)
     {
-        $redirect = 'Location:'.$this->main->Root_DIR.$url;
-        header($redirect);
+        header("Location:".$url);
     }
 
     /*

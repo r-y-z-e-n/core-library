@@ -62,6 +62,16 @@ $ryzen->theme_url = 'YOUR_UI_LOCATION';
 $ryzen->function->FunctionName();
 
 # List of Built-In Functions
+- Ry_hmac_create()     🆕 # [ create unique csrf for diff form ]
+# Parametes $ryzen->function->ry_hmac_create($string)
+# $ryzen->function->ry_hmac_create('iWillSecureLoginForm');
+# takes unique string to make unique token with csrf
+
+- Ry_hmac_check()      🆕 # [ checks passed token with generated once ]
+# Parametes $ryzen->function->ry_hmac_create($string, $token)
+# $ryzen->function->ry_hmac_create('iWillSecureLoginForm', $TokenFromPOSTorGET);
+# matches the passed token with csrf and string you passed to secure;
+
 - Ry_Secure()             # [ Secures Your String Data ]
 # Parameters $ryzen->function->Ry_Secure($string,$br,$strip);
 # $ryzen->function->Ry_Secure('Hello World!',true,1);
@@ -124,7 +134,7 @@ $ryzen->auth->FunctionName();
 
 #List of Built-In Authentication Function
 
-- Ry_Is_Logged_In()             # [ True If Logged in False if Not Logged in ]
+- Ry_Is_Logged_In()              # [ True If Logged in False if Not Logged in ]
 # Parameters : $ryzen->auth->Ry_Is_Logged_In();
 
 - Ry_Get_User_From_Session_ID() # [ Gives user_id From Loggedin session ]
@@ -167,6 +177,12 @@ Or
 
 - Ry_Sign_Out()                 # [ Signs out Current User ]
 # Parameters : $ryzen->auth->Ry_Sign_Out();
+
+- Ry_Value_Exists()             # [ Checks Whether the value exists in database ]
+# Parameters : $ryzen->auth->Ry_Value_Exists($data, $table, $operator);
+# $ryzen->auth->Ry_Value_Exists(['name'=>'raju','id'=>'4'], 'users', 'OR');
+# Operator is AND by default if not provided
+# Works as if name = raju OR id = 4
 ```
 ##### Using DbBuilder
 ```php

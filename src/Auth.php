@@ -135,6 +135,28 @@ class Auth
         return true;
     }
 
+    public function Ry_Value_Exists(array $data,$table,$logicalOperator = "AND"): bool
+    {
+
+        $supported_Logical_Operator = ["AND","OR"];
+
+        if(!in_array(strtoupper($logicalOperator),$supported_Logical_Operator)){
+            return false;
+        }
+
+        $attributes = array_keys($data);
+        $clause     = ' WHERE ' . implode(strtoupper(" ".$logicalOperator." "), array_map(fn($attr) => "$attr = :$attr", $attributes));
+
+        $statement  = $this->main->dbBuilder->pdo->prepare("SELECT * FROM $table $clause");
+        foreach ($data as $key => $value) {
+            $statement->bindValue(":$key", $value);
+        }
+        if ($statement->execute() && $statement->rowCount() > 0) {
+
+            return true;
+        }
+        return false;
+    }
     /*
      * Returns user data from ID
      * */
@@ -166,4 +188,6 @@ class Auth
         unset($_SESSION);
         return true;
     }
+
+
 }
