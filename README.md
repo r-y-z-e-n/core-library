@@ -58,131 +58,161 @@ $ryzen->theme_url = 'YOUR_UI_LOCATION';
 ```
 ##### Using In-Built Functions
 ```php
+use Ryzen\CoreLibrary\Functions;
+
 # Every Built-In functions comes with Ry_ prefix
-$ryzen->function->FunctionName();
+Functions::FunctionName();
 
 # List of Built-In Functions
 - Ry_hmac_create()     🆕 # [ create unique csrf for diff form ]
-# Parametes $ryzen->function->ry_hmac_create($string)
-# $ryzen->function->ry_hmac_create('iWillSecureLoginForm');
+# Parametes Functions::ry_hmac_create($string)
+# Functions::ry_hmac_create('iWillSecureLoginForm');
 # takes unique string to make unique token with csrf
 
 - Ry_hmac_check()      🆕 # [ checks passed token with generated once ]
-# Parametes $ryzen->function->ry_hmac_create($string, $token)
-# $ryzen->function->ry_hmac_create('iWillSecureLoginForm', $TokenFromPOSTorGET);
+# Parametes Functions::ry_hmac_create($string, $token)
+# Functions::ry_hmac_create('iWillSecureLoginForm', $TokenFromPOSTorGET);
 # matches the passed token with csrf and string you passed to secure;
 
 - Ry_Secure()             # [ Secures Your String Data ]
-# Parameters $ryzen->function->Ry_Secure($string,$br,$strip);
-# $ryzen->function->Ry_Secure('Hello World!',true,1);
+# Parameters Functions::Ry_Secure($string,$br,$strip);
+# Functions::Ry_Secure('Hello World!',true,1);
 Or
-# $ryzen->function->Ry_Secure('Hello World!');
+# Functions::Ry_Secure('Hello World!');
 
 - Ry_Clean_String()       # [ Cleans String Data ]
-# Parameters $ryzen->function->Ry_Clean_String($string);
-# $ryzen->function->Ry_Clean_String('Hello World !');
+# Parameters Functions::Ry_Clean_String($string);
+# Functions::Ry_Clean_String('Hello World !');
 
 - Ry_Generate_CSRF()      # [ Generates CSRF Token ]
-# Parameters $ryzen->function->Ry_Generate_CSRF();
-# $ryzen->function->Ry_Generate_CSRF();
+# Parameters Functions::Ry_Generate_CSRF();
+# Functions::Ry_Generate_CSRF();
 
 - Ry_Match_CSRF()         # [ Matches The CSRF Token ]
-# Parameters $ryzen->function->Ry_Match_CSRF($csrfToken);
-# $ryzen->function->Ry_Match_CSRF('7asdh7cbf7ab');
+# Parameters Functions::Ry_Match_CSRF($csrfToken);
+# Functions::Ry_Match_CSRF('7asdh7cbf7ab');
 
 - Ry_ObjectToArray()      # [ Converts Object To Array ]
-# Parameters $ryzen->function->Ry_ObjectToArray($object);
+# Parameters Functions::Ry_ObjectToArray($object);
 
 - Ry_ArrayToObject()      # [ Converts Array To object ]
-# Parameters $ryzen->function->Ry_ArrayToObject($array);
+# Parameters Functions::Ry_ArrayToObject($array);
 
 - Ry_Curl_Url()           # [ Curls URL ]
-# Parameters $ryzen->function->Ry_Curl_Url($url);
-# $ryzen->function->Ry_Curl_Url('https://google.com/curl/api/weather');
+# Parameters Functions::Ry_Curl_Url($url);
+# Functions::Ry_Curl_Url('https://google.com/curl/api/weather');
 
 - Ry_Encrypt()            # [ Encrypts Data into Hash ]
-# Parameters $ryzen->function->Ry_Encrypt($openString);
-# $ryzen->function->Ry_Encrypt('encryptMe');
+# Parameters Functions::Ry_Encrypt($openString);
+# Functions::Ry_Encrypt('encryptMe');
 
 - Ry_Decrypt()            # [ Decrypts Hash into Data ]
-# Parameters $ryzen->function->Ry_Decrypt($encryptedString);
-# $ryzen->function->Ry_Decrypt('exhjd9xnd9d');
+# Parameters Functions::Ry_Decrypt($encryptedString);
+# Functions::Ry_Decrypt('exhjd9xnd9d');
 
 - Ry_Strip_Long_Text()    # [ Strips Long Text to Short Text ]
-# Parameters $ryzen->function->Ry_Strip_Long_Text($string, $strip_length);
-# $ryzen->function->Ry_Strip_Long_Text('Hello World', 3);
+# Parameters Functions::Ry_Strip_Long_Text($string, $strip_length);
+# Functions::Ry_Strip_Long_Text('Hello World', 3);
 
 - Ry_Time_Completed()     # [ Gives You Time Completion Value ]
-# Parameters $ryzen->function->Ry_Time_Completed($timestamp or time);
-# $ryzen->function->Ry_Time_Completed(1234594);
+# Parameters Functions::Ry_Time_Completed($timestamp or time);
+# Functions::Ry_Time_Completed(1234594);
 or
-# $ryzen->function->Ry_Time_Completed('2020-11-05');
+# Functions::Ry_Time_Completed('2020-11-05');
 
 - Ry_Get_Browser()        # [ Gives The Current Browser and its specific details ]
-# Parameters $ryzen->function->Ry_Get_Browser();
+# Parameters Functions::Ry_Get_Browser();
 
 - Ry_Get_Ip_Address()     # [ Gives The IP Address ]
-# Parameters $ryzen->function->Ry_Get_Ip_Address();
+# Parameters Functions::Ry_Get_Ip_Address();
 
 - redirect()              # [ Redirects the URl ]
-# Parameters $ryzen->function->redirect($url);
-# $ryzen->function->redirect('home');
+# Parameters Functions::redirect($url);
+# Functions::redirect('home');
 ````
 ##### Using Authentication Functions
 ```php
-$ryzen->auth->FunctionName();
+use Ryzen\CoreLibrary\Auth;
+
+Auth::FunctionName();
 
 #List of Built-In Authentication Function
 
 - Ry_Is_Logged_In()              # [ True If Logged in False if Not Logged in ]
-# Parameters : $ryzen->auth->Ry_Is_Logged_In();
+# Parameters : Auth::Ry_Is_Logged_In();
 
 - Ry_Get_User_From_Session_ID() # [ Gives user_id From Loggedin session ]
-# Parameters : $ryzen->auth->Ry_Get_User_From_Session_ID($session_id);
-# $ryzen->auth->Ry_Get_User_From_Session_ID('begd7dh392jd0sj');
+# Parameters : Auth::Ry_Get_User_From_Session_ID($session_id);
+# Auth::Ry_Get_User_From_Session_ID('begd7dh392jd0sj');
 
 - Ry_Create_Login_Session()     # [ Creates new Login Session of user ]
-# Parameters : $ryzen->auth->Ry_Create_Login_Session($user_id);
-# $ryzen->auth->Ry_Create_Login_Session(1);
+# Parameters : Auth::Ry_Create_Login_Session($user_id);
+# Auth::Ry_Create_Login_Session(1);
 
 - Ry_Is_Valid_Sign_In()         # [ Checks For Correct Username or Password ]
-# Parameters : $ryzen->auth->Ry_Is_Valid_Sign_In($username or email or phonenumber, $password);
-# $ryzen->auth->Ry_Is_Valid_Sign_In('ryzen', '12345678');
+# Parameters : Auth::Ry_Is_Valid_Sign_In($username or email or phonenumber, $password);
+# Auth::Ry_Is_Valid_Sign_In('ryzen', '12345678');
 Or
-# $ryzen->auth->Ry_Is_Valid_Sign_In('ryzen@ryzen.com', '12345678');
+# Auth::Ry_Is_Valid_Sign_In('ryzen@ryzen.com', '12345678');
 Or
-# $ryzen->auth->Ry_Is_Valid_Sign_In(98123129292, '12345678');
+# Auth::Ry_Is_Valid_Sign_In(98123129292, '12345678');
 
 - Ry_Get_User_Id()              # [ Returns User_id From Username, email or Phone ]
-# Parameters : $ryzen->auth->Ry_Get_User_Id($username or email or phonenumber);
-# $ryzen->auth->Ry_Get_User_Id('ryzen');
+# Parameters : Auth::Ry_Get_User_Id($username or email or phonenumber);
+# Auth::Ry_Get_User_Id('ryzen');
 Or
-# $ryzen->auth->Ry_Get_User_Id('ryzen@ryzen.com');
+# Auth::Ry_Get_User_Id('ryzen@ryzen.com');
 Or
-# $ryzen->auth->Ry_Get_User_Id(98123123123);
+# Auth::Ry_Get_User_Id(98123123123);
 
 - Ry_Create_Login()             # [ Creates New Login with username, email or phone ]
-# Parameters : $ryzen->auth->Ry_Create_Login($username or email or phonenumber, $rememberLogin);
-# $ryzen->auth->Ry_Create_Login('ryen', 1);
+# Parameters : Auth::Ry_Create_Login($username or email or phonenumber, $rememberLogin);
+# Auth::Ry_Create_Login('ryen', 1);
 Or
-# $ryzen->auth->Ry_Create_Login('ryzen');
+# Auth::Ry_Create_Login('ryzen');
 
 - Ry_Login_With_Id()            # [ Creates New Login With ID ]
-# Parameters : $ryzen->auth->Ry_Login_With_Id($user_id);
-# $ryzen->auth->Ry_Login_With_Id(1);
+# Parameters : Auth::Ry_Login_With_Id($user_id);
+# Auth::Ry_Login_With_Id(1);
 
 - Ry_User_Data()                # [ Returns all user Data from ID ]
-# Parameters : $ryzen->auth->Ry_User_Data($user_id);
-# $ryzen->auth->Ry_User_Data(1);
+# Parameters : Auth::Ry_User_Data($user_id);
+# Auth::Ry_User_Data(1);
 
 - Ry_Sign_Out()                 # [ Signs out Current User ]
-# Parameters : $ryzen->auth->Ry_Sign_Out();
+# Parameters : Auth::Ry_Sign_Out();
 
 - Ry_Value_Exists()             # [ Checks Whether the value exists in database ]
-# Parameters : $ryzen->auth->Ry_Value_Exists($data, $table, $operator);
-# $ryzen->auth->Ry_Value_Exists(['name'=>'raju','id'=>'4'], 'users', 'OR');
+# Parameters : Auth::Ry_Value_Exists($data, $table, $operator);
+# Auth::Ry_Value_Exists(['name'=>'raju','id'=>'4'], 'users', 'OR');
 # Operator is AND by default if not provided
 # Works as if name = raju OR id = 4
+```
+##### Session Helper
+```php
+use Ryzen\CoreLibrary\Session;
+
+Session::FunctionName();
+
+#List of Built-In Session Function
+
+- put()              # [ Creates New Session ]
+# Parameters : Session::put($key , $value);
+# Session::put('key','value'); || Session::put(['key'=>'value',]);
+
+- get()              # [ return session value using key ]
+# Parameters : Session::get($key);
+# Session::get('key');
+
+- has()              # [ Checks whether the session exists ]
+# Parameters : Session::has($key);
+
+- forget()           # [ Deletes Specific Session ]
+# Parameters : Session::forget($key);
+
+- flush()            # [ Destroys every session ]
+# Parameters : Session::flush();
+
 ```
 ##### Using DbBuilder
 ```php
