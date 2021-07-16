@@ -14,9 +14,7 @@ class Ry_Zen
 {
 
     public ?\PDO $pdo;
-    public Auth $auth;
     public DbBuilder $dbBuilder;
-    public Functions $function;
 
     public static Ry_Zen $main;
     public string $Root_DIR;
@@ -42,14 +40,14 @@ class Ry_Zen
         $this->T_SESSION    =   $config['default_tables']['users_sessions'];
         $this->dbBuilder    =   new DbBuilder($config);
         $this->pdo          =   $this->dbBuilder->pdo;
-        $this->function     =   new Functions();
-        $this->auth         =   new Auth();
     }
 
-    /*
-     * View Loader (returns view file)
-     * */
-    public function Ry_Load_Page($pageURL = '')
+    /**
+     * @param string $pageURL
+     * @return false|string
+     */
+
+    public function Ry_Load_Page(string $pageURL = '')
     {
             global $ry;
             $page = $this->theme_url . $pageURL . '.phtml';

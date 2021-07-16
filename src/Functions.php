@@ -14,24 +14,18 @@ use stdClass;
 
 class Functions
 {
-    protected Ry_Zen $main;
 
     /**
-     * Functions constructor.
+     * @param $string
+     * @param bool $br
+     * @param int $strip
+     * @return array|string|string[]
      */
 
-    public function __construct()
-    {
-        $this->main =   Ry_Zen::$main;
-    }
-
-    /*
-     * Secures your data string helps prevent malicious input
-     * */
-    public function Ry_Secure($string, $br = true, $strip = 0)
+    public static function Ry_Secure($string, bool $br = true, int $strip = 0)
     {
         $string = trim($string);
-        $string = $this->Ry_Clean_String($string);
+        $string = self::Ry_Clean_String($string);
         $string = htmlspecialchars($string, ENT_QUOTES);
 
         if ($br == true) {
@@ -58,22 +52,22 @@ class Functions
         return str_replace('&amp;#', '&#', $string);
     }
 
-    /*
-     * String Cleaner
-     * */
-    public function Ry_Clean_String($string)
+    /**
+     * @param $string
+     * @return array|string|string[]|null
+     */
+
+    public static function Ry_Clean_String($string)
     {
         return preg_replace("/&#?[a-z0-9]+;/i", "", $string);
     }
 
     /**
+     * @return string
      * @throws Exception
      */
 
-    /*
-     * Generates Random 32 Byte String as CSRF Token
-     * */
-    public function Ry_Generate_CSRF():string
+    public static function Ry_Generate_CSRF():string
     {
         if(empty($_SESSION['csrf_token'])){
 
@@ -83,12 +77,15 @@ class Functions
     }
 
     /**
+     * @param string $string
+     * @return false|string
      * @throws Exception
      */
-    public function Ry_hmac_create(string $string){
+
+    public static function Ry_hmac_create(string $string){
 
         if(empty($_SESSION['csrf_token'])){
-            $token = $this->Ry_Generate_CSRF();
+            $token = self::Ry_Generate_CSRF();
         }else{
             $token = $_SESSION['csrf_token'];
         }
@@ -99,22 +96,26 @@ class Functions
     }
 
     /**
+     * @param string $string
+     * @param $token
+     * @return bool
      * @throws Exception
      */
-    public function Ry_hmac_check(string $string, $token): bool
-    {
 
-        if(hash_equals($this->Ry_hmac_create($string), $token)){
+    public static function Ry_hmac_check(string $string, $token): bool
+    {
+        if(hash_equals(self::Ry_hmac_create($string), $token)){
             return true;
         }
-
         return false;
     }
 
-    /*
-     * Matched the CSRF Token Provided With The Generated Once
-     * */
-    public function Ry_Match_CSRF($token): bool
+    /**
+     * @param $token
+     * @return bool
+     */
+
+    public static function Ry_Match_CSRF($token): bool
     {
         if (isset($_SESSION['csrf_token']) && $_SESSION['csrf_token'] !== '' && hash_equals($token, $_SESSION['csrf_token'])) {
 
@@ -126,18 +127,21 @@ class Functions
         }
     }
 
-    /*
-     * Redirects Page to the desired location
-     * */
-    public function redirect($url)
+    /**
+     * @param $url
+     */
+
+    public static function redirect($url)
     {
         header("Location:".$url);
     }
 
-    /*
-     * TypeCasts Object Associative Array
-     * */
-    public function Ry_ObjectToArray($obj)
+    /**
+     * @param $obj
+     * @return array|mixed
+     */
+
+    public static function Ry_ObjectToArray($obj)
     {
         if (is_object($obj))
             $obj = (array)$obj;
@@ -152,10 +156,12 @@ class Functions
         return $new;
     }
 
-    /*
-     * TypeCasts Array To Object
-     * */
-    public function Ry_ArrayToObject($array): stdClass
+    /**
+     * @param $array
+     * @return stdClass
+     */
+
+    public static function Ry_ArrayToObject($array): stdClass
     {
         $object = new stdClass();
         foreach ($array as $key => $value) {
@@ -169,10 +175,12 @@ class Functions
         return $object;
     }
 
-    /*
-     * Curls URL
-     * */
-    public function Ry_Curl_Url($url)
+    /**
+     * @param $url
+     * @return bool|string
+     */
+
+    public static function Ry_Curl_Url($url)
     {
         if (empty($url)) {
             return false;
@@ -191,45 +199,52 @@ class Functions
         return curl_exec($ch);
     }
 
-    /*
-     * Encrypts Your String into secured unreadable hash
-     * */
-    public function Ry_Encrypt($data): string
+    /**
+     * @param $data
+     * @return string
+     */
+
+    public static function Ry_Encrypt($data): string
     {
         $iv         = substr(sha1(mt_rand()), 0, 16);
-        $password   = sha1($this->main->password);
+        $password   = sha1(Ry_Zen::$main->password);
 
         $salt       = sha1(mt_rand());
         $saltWithPassword = hash('sha256', $password, $salt);
 
-        $encryption = openssl_encrypt($data, $this->main->encMethod, "$saltWithPassword", null, $iv);
+        $encryption = openssl_encrypt($data, Ry_Zen::$main->encMethod, "$saltWithPassword", null, $iv);
 
         return "$iv:$salt:$encryption";
     }
 
-    /*
-     * Decrypts the unreadable hash to readable string
-     * */
-    public function Ry_Decrypt($encryptedData){
+    /**
+     * @param $encryptedData
+     * @return false|string
+     */
 
-        $password       = sha1($this->main->password);
+    public static function Ry_Decrypt($encryptedData){
+
+        $password       = sha1(Ry_Zen::$main->password);
         $components     = explode(':', $encryptedData);
 
         $iv             = $components[0];
         $salt           = hash('sha256', $password,$components[1]);
         $encrypted_data = $components[2];
 
-        $decryption     = openssl_decrypt($encrypted_data, $this->main->encMethod, $salt,null, $iv);
+        $decryption     = openssl_decrypt($encrypted_data, Ry_Zen::$main->encMethod, $salt,null, $iv);
         if($decryption === false)
             return false;
         $msg = substr($decryption, 41);
         return $decryption;
     }
 
-    /*
-     * Strips Long Texts into Short Texts
-     * */
-    public function Ry_Strip_Long_Text($string, $length): string{
+    /**
+     * @param $string
+     * @param $length
+     * @return string
+     */
+
+    public static function Ry_Strip_Long_Text($string, $length): string{
         $string = strip_tags($string);
         if (strlen($string) > $length) {
             $stringCut = substr($string, 0, $length);
@@ -240,13 +255,13 @@ class Functions
     }
 
     /**
+     * @param $datetime
+     * @param false $full
+     * @return string
      * @throws Exception
      */
 
-    /*
-     * Time Structure
-     * */
-    public function Ry_Time_Completed($datetime, $full = false): string{
+    public static function Ry_Time_Completed($datetime, bool $full = false): string{
         $now = new DateTime;
         $ago = new DateTime($datetime);
         $diff = $now->diff($ago);
@@ -275,10 +290,11 @@ class Functions
         return $string ? implode(', ', $string) . ' ago' : 'just now';
     }
 
-    /*
-     * Returns the current browser information
-     * */
-    public function Ry_Get_Browser(): array
+    /**
+     * @return array
+     */
+
+    public static function Ry_Get_Browser(): array
     {
         $u_agent        = $_SERVER['HTTP_USER_AGENT'];
         $browser_name   = 'Unknown';
@@ -349,14 +365,15 @@ class Functions
             'version'       => $version,
             'platform'      => $platform,
             'pattern'       => $pattern,
-            'ip_address'    => $this->Ry_Get_Ip_Address(),
+            'ip_address'    => self::Ry_Get_Ip_Address(),
         );
     }
 
-    /*
-     * Returns the IP address Of the user
-     * */
-    public function Ry_Get_Ip_Address()
+    /**
+     * @return mixed
+     */
+
+    public static function Ry_Get_Ip_Address()
     {
         if (!empty($_SERVER['HTTP_X_FORWARDED']) && self::validate_ip($_SERVER['HTTP_X_FORWARDED'])) {
             return $_SERVER['HTTP_X_FORWARDED'];
@@ -376,10 +393,12 @@ class Functions
         return $_SERVER['REMOTE_ADDR'];
     }
 
-    /*
-     * IP address Validator
-     * */
-    public function validate_ip($ip): bool
+    /**
+     * @param $ip
+     * @return bool
+     */
+
+    public static function validate_ip($ip): bool
     {
         if (strtolower($ip) === 'unknown')
             return false;
