@@ -7,24 +7,23 @@
 
 ##### Super powerful, Highly optimized and Fully Secured Core PHP Library For Your PHP Web Application.
 
+###IMPORTANT NOTE FOR V1.0.4 AND BELOW ****** DON'T MISS
+
+```
+If your application is running any version below 1.0.5 donnot update to version
+1.0.5 until and unless you are aware of the huge changes and made in 1.0.5.
+
+Please refer to documentation before updating.
+```
+
 ### Install
 
-Include following block of code to your compose.json file
-
-```json
-{
-    "require": {
-        "ryzen/core-library": "^1.0.3"
-    }
-}
+Run the below command in your terminal
+```
+$ composer require ryzen/core-library
 ```
 
-Now, run the following command in your Terminal
-```
-$ composer update
-```
-
-Finally, Import the auto loader and create new object with configuration
+Finally, Import the autoloader and create new object with configuration
 ```php
 <?php
 
@@ -61,22 +60,87 @@ $site_url   = 'http://localhost/YOUR_APPLICATION_ROOT_PATH';
 $corelib    =  new Ryzen\CoreLibrary\Ry_Zen($site_url,$config);
 ```
 
-### Example
+### View
 ```php
-# Example For Using Functions
+# Loading View
 
-$ip_address = Functions::Ry_Get_Ip_Address();
+View::load('fileName');
 
-# Example For Using Auth
+# To cache the view pass true as second parameter ('fileName', true);
+# Default filename extension is .php;
 
-$user_data  = Auth::Ry_User_Data(1);
+# Clearing View Cache
 
-# Example For Using Session
+View::cleanCache('fileName');
+```
+##### View Customization
+```php
+# Changing View Extension 
 
-$session    = Session::put('name','raju');
+Ry_Zen::$main->viewExtension = 'html' OR 'php' OR 'phtml';
 
-# Example For Using DatabaseQuery
+# Changing Default UI path
 
+Ry_Zen::$main->theme_url = 'Your path'; # Default is './resources/view/';
+```
+### File System
+```php
+# Creates new directory if not exists
+
+FileSystem::checkCreateDir('uploads');
+```
+### Lazy
+#### Lazy Backup
+```php
+# Backup all your project files and folder into zip
+
+Lazy::backMeUp();
+```
+#### Lazy Migrate
+```php
+# Automatically creates users and user session table for you
+
+Lazy::migrateDefaults();
+
+# If your table uses prefixes pass it through parameter else leave empty
+# Example -> Lazy::migrateDefaults('ry'); [ OUTPUT (ry_users),(ry_users_sessions) ]
+```
+### Cache
+```php
+# Opens up cache directory
+
+Cache::openCacheDirectory();
+```
+### Functions
+```php
+# Example
+
+Functions::safe_string();
+```
+### Auth
+```php
+# Example
+
+Auth::check();
+```
+
+### Cookie
+```php
+# Example
+
+Cookie::get();
+```
+
+### Session
+```php
+# Example
+
+Session::put();
+```
+
+### Database Builder
+```php
+# Inbuilt
 $corelib->dbbuilder->table('users')->getAll();
 
 # Example For Using DatabaseQuery PDO

@@ -7,17 +7,20 @@ class Session
     /**
      * @param $sessionSet
      * @param null $value
+     * @return array|string|string[]
      */
 
     public static function put($sessionSet, $value = null){
+        $put = '';
         if(is_array($sessionSet)){
             foreach ($sessionSet as $key => $value){
-                $_SESSION[$key] = Functions::Ry_Secure($value);
+                $put = $_SESSION[$key] = $value;
             }
         }
         if(is_string($sessionSet)){
-            $_SESSION[$sessionSet] = Functions::Ry_Secure($value);
+            $put = $_SESSION[$sessionSet] = $value;
         }
+        return $put;
     }
 
     /**
@@ -27,9 +30,9 @@ class Session
 
     public static function get($key){
         if(self::has($key)){
-            return Functions::Ry_Secure($_SESSION[$key]);
+            return Functions::safeString($_SESSION[$key]);
         }
-        return 'Session Undeclared';
+        return false;
     }
 
     /**
@@ -55,7 +58,7 @@ class Session
     }
 
     /**
-     *
+     * Cleans All Sessions;
      */
 
     public static function flush(){

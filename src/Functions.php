@@ -4,7 +4,7 @@ namespace Ryzen\CoreLibrary;
 
 use DateTime;
 use Exception;
-use stdClass;
+use Ryzen\CoreLibrary\helper\BaseFunctions;
 
 /**
  * @author razoo.choudhary@gmail.com
@@ -12,43 +12,36 @@ use stdClass;
  * @package Ryzen\CoreLibrary
  */
 
-class Functions
+class Functions extends BaseFunctions
 {
 
     /**
      * @param $string
-     * @param bool $br
+     * @param bool $breakString
      * @param int $strip
      * @return array|string|string[]
      */
 
-    public static function Ry_Secure($string, bool $br = true, int $strip = 0)
+    public static function safeString($string, bool $breakString = true, int $strip = 0)
     {
-        $string = trim($string);
-        $string = self::Ry_Clean_String($string);
-        $string = htmlspecialchars($string, ENT_QUOTES);
 
-        if ($br == true) {
+        $string = htmlspecialchars(self::cleanString(trim($string)), ENT_QUOTES);
 
+        if ($breakString == true) {
             $string = str_replace('\r\n', " <br>", $string);
             $string = str_replace('\n\r', " <br>", $string);
             $string = str_replace('\r', " <br>", $string);
             $string = str_replace('\n', " <br>", $string);
-
-        } else {
-
+        }
+        if($breakString == false){
             $string = str_replace('\r\n', "", $string);
             $string = str_replace('\n\r', "", $string);
             $string = str_replace('\r', "", $string);
             $string = str_replace('\n', "", $string);
-
         }
-
         if ($strip == 1) {
-
             $string = stripslashes($string);
         }
-
         return str_replace('&amp;#', '&#', $string);
     }
 
@@ -57,7 +50,7 @@ class Functions
      * @return array|string|string[]|null
      */
 
-    public static function Ry_Clean_String($string)
+    public static function cleanString($string)
     {
         return preg_replace("/&#?[a-z0-9]+;/i", "", $string);
     }
@@ -67,13 +60,27 @@ class Functions
      * @throws Exception
      */
 
-    public static function Ry_Generate_CSRF():string
+    public static function generateCsrf():string
     {
-        if(empty($_SESSION['csrf_token'])){
-
-            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+        if(Session::has('csrf_token') == false){
+            Session::put('csrf_token',bin2hex(random_bytes(32)));
         }
-        return $_SESSION['csrf_token'];
+        return Session::get('csrf_token');
+    }
+
+    /**
+     * @param string $token
+     * @return bool
+     * @throws Exception
+     */
+
+    public static function checkCsrf(string $token): bool
+    {
+        if (Session::has('csrf_token') && Session::get('csrf_token') !== '' && hash_equals($token, Session::get('csrf_token'))) {
+            Session::forget('csrf_token') && self::generateCsrf();
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -82,17 +89,11 @@ class Functions
      * @throws Exception
      */
 
-    public static function Ry_hmac_create(string $string){
-
-        if(empty($_SESSION['csrf_token'])){
-            $token = self::Ry_Generate_CSRF();
-        }else{
-            $token = $_SESSION['csrf_token'];
-        }
+    public static function createHmac(string $string){
         if(empty($string)){
             return "Missing Parameter";
         }
-        return hash_hmac('sha256', $string, $token);
+        return hash_hmac('sha256', $string, self::generateCsrf());
     }
 
     /**
@@ -102,29 +103,12 @@ class Functions
      * @throws Exception
      */
 
-    public static function Ry_hmac_check(string $string, $token): bool
+    public static function checkHmac(string $string, $token): bool
     {
-        if(hash_equals(self::Ry_hmac_create($string), $token)){
+        if(hash_equals(self::createHmac($string), $token)){
             return true;
         }
         return false;
-    }
-
-    /**
-     * @param $token
-     * @return bool
-     */
-
-    public static function Ry_Match_CSRF($token): bool
-    {
-        if (isset($_SESSION['csrf_token']) && $_SESSION['csrf_token'] !== '' && hash_equals($token, $_SESSION['csrf_token'])) {
-
-            return true;
-
-        } else {
-
-            return false;
-        }
     }
 
     /**
@@ -137,56 +121,16 @@ class Functions
     }
 
     /**
-     * @param $obj
-     * @return array|mixed
-     */
-
-    public static function Ry_ObjectToArray($obj)
-    {
-        if (is_object($obj))
-            $obj = (array)$obj;
-        if (is_array($obj)) {
-            $new = array();
-            foreach ($obj as $key => $val) {
-                $new[$key] = array($val);
-            }
-        } else {
-            $new = $obj;
-        }
-        return $new;
-    }
-
-    /**
-     * @param $array
-     * @return stdClass
-     */
-
-    public static function Ry_ArrayToObject($array): stdClass
-    {
-        $object = new stdClass();
-        foreach ($array as $key => $value) {
-            if (is_array($value)) {
-                $value = ToObject($value);
-            }
-            if (isset($value)) {
-                $object->$key = $value;
-            }
-        }
-        return $object;
-    }
-
-    /**
      * @param $url
+     * @param bool $isPOST
      * @return bool|string
      */
 
-    public static function Ry_Curl_Url($url)
+    public static function curlUrl($url, bool $isPOST = false)
     {
-        if (empty($url)) {
-            return false;
-        }
+
         $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_POST, false);
+        curl_setopt($ch, CURLOPT_POST, $isPOST);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
@@ -202,19 +146,22 @@ class Functions
     /**
      * @param $data
      * @return string
+     * @throws Exception
      */
 
-    public static function Ry_Encrypt($data): string
+    public static function encrypt($data): string
     {
         $iv         = substr(sha1(mt_rand()), 0, 16);
         $password   = sha1(Ry_Zen::$main->password);
-
         $salt       = sha1(mt_rand());
         $saltWithPassword = hash('sha256', $password, $salt);
-
-        $encryption = openssl_encrypt($data, Ry_Zen::$main->encMethod, "$saltWithPassword", null, $iv);
-
-        return "$iv:$salt:$encryption";
+        $encryption = openssl_encrypt(self::safeString($data, false), Ry_Zen::$main->encMethod, "$saltWithPassword", null, $iv);
+        $keyChar    = "$iv:$salt:$encryption";
+        if(strtolower(self::decrypt($keyChar)) == strtolower($data)){
+            return $keyChar;
+        }else{
+            throw new Exception('Encryption Failed ReTRY');
+        }
     }
 
     /**
@@ -222,19 +169,17 @@ class Functions
      * @return false|string
      */
 
-    public static function Ry_Decrypt($encryptedData){
+    public static function decrypt($encryptedData){
 
         $password       = sha1(Ry_Zen::$main->password);
         $components     = explode(':', $encryptedData);
-
         $iv             = $components[0];
         $salt           = hash('sha256', $password,$components[1]);
         $encrypted_data = $components[2];
-
         $decryption     = openssl_decrypt($encrypted_data, Ry_Zen::$main->encMethod, $salt,null, $iv);
         if($decryption === false)
             return false;
-        $msg = substr($decryption, 41);
+        substr(self::safeString($decryption, false), 41);
         return $decryption;
     }
 
@@ -244,7 +189,7 @@ class Functions
      * @return string
      */
 
-    public static function Ry_Strip_Long_Text($string, $length): string{
+    public static function stripLongString($string, $length): string{
         $string = strip_tags($string);
         if (strlen($string) > $length) {
             $stringCut = substr($string, 0, $length);
@@ -261,12 +206,11 @@ class Functions
      * @throws Exception
      */
 
-    public static function Ry_Time_Completed($datetime, bool $full = false): string{
-        $now = new DateTime;
-        $ago = new DateTime($datetime);
-        $diff = $now->diff($ago);
-
-        $diff->w = floor($diff->d / 7);
+    public static function getTimeCompleted($datetime, bool $full = false): string{
+        $now      = new DateTime;
+        $ago      = new DateTime($datetime);
+        $diff     = $now->diff($ago);
+        $diff->w  = floor($diff->d / 7);
         $diff->d -= $diff->w * 7;
 
         $string = array(
@@ -294,12 +238,12 @@ class Functions
      * @return array
      */
 
-    public static function Ry_Get_Browser(): array
+    public static function getUserBrowser(): array
     {
         $u_agent        = $_SERVER['HTTP_USER_AGENT'];
         $browser_name   = 'Unknown';
         $platform       = 'Unknown';
-        $version        = '';
+        $ub             = '';
 
         if (preg_match('/macintosh|mac os x/i', $u_agent)) {
             $platform = 'mac';
@@ -338,23 +282,18 @@ class Functions
         $known = array('Version', $ub, 'other');
         $pattern = '#(?<browser>' . join('|', $known) . ')[/ ]+(?<version>[0-9.|a-zA-Z.]*)#';
 
-        if (!preg_match_all($pattern, $u_agent, $matches)) {
-
-        }
+        if (!preg_match_all($pattern, $u_agent, $matches)) {}
 
         $i = count($matches['browser']);
         if ($i != 1) {
-
             if (strripos($u_agent, "Version") < strripos($u_agent, $ub)) {
                 $version = $matches['version'][0];
             } else {
                 $version = $matches['version'][1];
             }
-
         } else {
             $version = $matches['version'][0];
         }
-
         if ($version == null || $version == "") {
             $version = "?";
         }
@@ -365,7 +304,7 @@ class Functions
             'version'       => $version,
             'platform'      => $platform,
             'pattern'       => $pattern,
-            'ip_address'    => self::Ry_Get_Ip_Address(),
+            'ip_address'    => self::getUserIp(),
         );
     }
 
@@ -373,21 +312,21 @@ class Functions
      * @return mixed
      */
 
-    public static function Ry_Get_Ip_Address()
+    public static function getUserIp()
     {
-        if (!empty($_SERVER['HTTP_X_FORWARDED']) && self::validate_ip($_SERVER['HTTP_X_FORWARDED'])) {
+        if (!empty($_SERVER['HTTP_X_FORWARDED']) && self::validateIp($_SERVER['HTTP_X_FORWARDED'])) {
             return $_SERVER['HTTP_X_FORWARDED'];
         }
 
-        if (!empty($_SERVER['HTTP_X_CLUSTER_CLIENT_IP']) && self::validate_ip($_SERVER['HTTP_X_CLUSTER_CLIENT_IP'])) {
+        if (!empty($_SERVER['HTTP_X_CLUSTER_CLIENT_IP']) && self::validateIp($_SERVER['HTTP_X_CLUSTER_CLIENT_IP'])) {
             return $_SERVER['HTTP_X_CLUSTER_CLIENT_IP'];
         }
 
-        if (!empty($_SERVER['HTTP_FORWARDED_FOR']) && self::validate_ip($_SERVER['HTTP_FORWARDED_FOR'])) {
+        if (!empty($_SERVER['HTTP_FORWARDED_FOR']) && self::validateIp($_SERVER['HTTP_FORWARDED_FOR'])) {
             return $_SERVER['HTTP_FORWARDED_FOR'];
         }
 
-        if (!empty($_SERVER['HTTP_FORWARDED']) && self::validate_ip($_SERVER['HTTP_FORWARDED'])) {
+        if (!empty($_SERVER['HTTP_FORWARDED']) && self::validateIp($_SERVER['HTTP_FORWARDED'])) {
             return $_SERVER['HTTP_FORWARDED'];
         }
         return $_SERVER['REMOTE_ADDR'];
@@ -398,7 +337,7 @@ class Functions
      * @return bool
      */
 
-    public static function validate_ip($ip): bool
+    public static function validateIp($ip): bool
     {
         if (strtolower($ip) === 'unknown')
             return false;

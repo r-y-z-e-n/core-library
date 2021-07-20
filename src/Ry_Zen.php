@@ -2,6 +2,7 @@
 
 namespace Ryzen\CoreLibrary;
 
+use PDO;
 use Ryzen\DbBuilder\DbBuilder;
 
 /**
@@ -13,16 +14,31 @@ use Ryzen\DbBuilder\DbBuilder;
 class Ry_Zen
 {
 
-    public ?\PDO $pdo;
-    public DbBuilder $dbBuilder;
+    /**
+     * @var PDO|null
+     */
 
+    public ?PDO $pdo;
+    public DbBuilder $dbBuilder;
     public static Ry_Zen $main;
-    public string $Root_DIR;
-    public string $T_SESSION;
+
+    /**
+     * @var string|mixed
+     */
+
     public string $T_USERS;
     public string $password;
+    public string $Root_DIR;
+    public string $T_SESSION;
     public string $encMethod;
-    public string $theme_url = './themes/default/layouts/';
+
+    /**
+     * @var string
+     */
+
+    public string $content       = '';
+    public string $theme_url     = './resources/view/';
+    public string $viewExtension = 'php';
 
     /**
      * Ry_Zen constructor.
@@ -32,30 +48,16 @@ class Ry_Zen
 
     public function __construct(string $Root_DIRECTORY, $config)
     {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
         self::$main         =   $this;
         $this->Root_DIR     =   $Root_DIRECTORY;
         $this->password     =   $config['encryption_method']['password'];
         $this->encMethod    =   $config['encryption_method']['encryptionMethod'];
-        $this->T_USERS      =   $config['default_tables']['users'];
-        $this->T_SESSION    =   $config['default_tables']['users_sessions'];
+        $this->T_USERS      =   (!empty($config['default_tables']['users'])) ? $config['default_tables']['users'] : 'users';
+        $this->T_SESSION    =   (!empty($config['default_tables']['users_sessions'])) ? $config['default_tables']['users_sessions'] : 'users_sessions';
         $this->dbBuilder    =   new DbBuilder($config);
         $this->pdo          =   $this->dbBuilder->pdo;
-    }
-
-    /**
-     * @param string $pageURL
-     * @return false|string
-     */
-
-    public function Ry_Load_Page(string $pageURL = '')
-    {
-            global $ry;
-            $page = $this->theme_url . $pageURL . '.phtml';
-            $page_content = '';
-            ob_start();
-            require $page;
-            $page_content = ob_get_contents();
-            ob_end_clean();
-            return $page_content;
     }
 }

@@ -2,77 +2,50 @@
 
 namespace Ryzen\CoreLibrary;
 
+use Exception;
+use Ryzen\CoreLibrary\helper\Authentication;
+use Ryzen\DbBuilder\DbBuilder;
+use Ryzen\CoreLibrary\helper\BaseFunctions;
+
 /**
  * @author razoo.choudhary@gmail.com
  * Class Auth
  * @package Ryzen\CoreLibrary
  */
 
-class Auth
+class Auth extends Authentication
 {
-
     /**
      * @return bool
      */
 
-    public static function Ry_Is_Logged_In(): bool
-    {
+    public static function check(): bool {
+        $user_id = '';
         if (Session::has('user_id')) {
-            $user_id = self::Ry_Get_User_From_Session_ID(Session::get('user_id'));
-            if (is_numeric($user_id) && !empty($user_id)) {
-                return true;
-            }
-        } elseif (isset($_COOKIE['user_id']) && !empty($_COOKIE['user_id'])) {
-            $user_id = self::Ry_Get_User_From_Session_ID($_COOKIE['user_id']);
-            if (is_numeric($user_id) && !empty($user_id)) {
-                return true;
-            }
+            $user_id = self::getLoggedUserSession(Session::get('user_id'));
+        } elseif (Cookie::has('user_id') && !empty(Cookie::get('user_id'))) {
+            $user_id = self::getLoggedUserSession(Cookie::get('user_id'));
+        }
+        if (is_numeric($user_id) && !empty($user_id)) {
+            return true;
         }
         return false;
     }
 
     /**
-     * @param string $session_id
-     * @param string $platform
-     * @return mixed
+     * @return int|string
      */
 
-    public static function Ry_Get_User_From_Session_ID(string $session_id, string $platform = 'web')
-    {
-        $session_id = Functions::Ry_Secure($session_id);
-        $statement  = Ry_Zen::$main->dbBuilder->table(Ry_Zen::$main->T_SESSION)->select('*')->where('session_id',$session_id)->limit(1)->get();
-
-        if (Ry_Zen::$main->dbBuilder->numRows() > 0) {
-            if (empty($statement->platform_details) && $statement->platform == 'web') {
-                $userBrowser = json_encode(Functions::Ry_Get_Browser());
-                if (isset($statement->platform_details)) {
-                    Ry_Zen::$main->dbBuilder->table(Ry_Zen::$main->T_SESSION)->where('id','=',$statement->id)->update(['platform_details' => $userBrowser]);
-                }
+    public static function getUserId(){
+        if(self::check()){
+            $session_id = (!empty(Session::get('user_id'))) ? Session::get('user_id') : Cookie::get('user_id');
+            $user_id    = self::getLoggedUserSession($session_id);
+            if(empty($user_id) || !is_numeric($user_id) || $user_id < 0){
+                return "User Identification Failed. ERROR [707] ";
             }
-            return $statement->user_id;
+            return (int) Functions::safeString($user_id);
         }
-        return false;
-    }
-
-    /**
-     * @param int $user_id
-     * @return false|string
-     */
-
-    public static function Ry_Create_Login_Session(int $user_id = 0){
-        if (empty($user_id)) { return false; }
-
-        $user_id    = Functions::Ry_Secure($user_id);
-        $hash       = sha1(rand(111111111, 999999999)) . md5(microtime()) . rand(11111111, 99999999) . md5(rand(5555, 9999));
-        $query      = Ry_Zen::$main->dbBuilder->table(Ry_Zen::$main->T_SESSION)->where('session_id',$hash)->delete();
-
-        if ($hash) {
-            $userBrowser        = json_encode(Functions::Ry_Get_Browser());
-            Ry_Zen::$main->dbBuilder->table(Ry_Zen::$main->T_SESSION)->where('platform_details',$userBrowser)->delete();
-            Ry_Zen::$main->dbBuilder->table(Ry_Zen::$main->T_SESSION)->insert(['user_id' => $user_id, 'session_id' => $hash, 'platform' => 'web', 'platform_details' => $userBrowser]);
-            return $hash;
-        }
-        return false;
+        return 'No User Was Authenticated.';
     }
 
     /**
@@ -81,13 +54,11 @@ class Auth
      * @return bool
      */
 
-    public static function Ry_Is_Valid_Sign_In($username, $password): bool
-    {
-        $username = Functions::Ry_Secure($username);
+    public static function validateCredentials($username, $password): bool {
+        $username = Functions::safeString($username);
         $getUser  = Ry_Zen::$main->dbBuilder->table(Ry_Zen::$main->T_USERS)->where('user_email', '=',$username)->orWhere('user_username', '=',$username)->orWhere('user_phone_number', '=',$username)->get();
-
         if ($getUser && Ry_Zen::$main->dbBuilder->numRows() > 0) {
-            if (password_verify(Functions::Ry_Secure($password), $getUser->user_password)) {
+            if (password_verify(Functions::safeString($password), $getUser->user_password)) {
                 return true;
             }
         }
@@ -96,45 +67,35 @@ class Auth
 
     /**
      * @param $username
-     * @return array|false|string|string[]
-     */
-
-    public static function Ry_Get_User_Id($username)
-    {
-        $username = Functions::Ry_Secure($username);
-        $getUser  = Ry_Zen::$main->dbBuilder->table(Ry_Zen::$main->T_USERS)->where('user_email', '=',$username)->orWhere('user_username', '=',$username)->orWhere('user_phone_number', '=',$username)->get();
-
-        if ($getUser && Ry_Zen::$main->dbBuilder->numRows() > 0) {
-            return Functions::Ry_Secure($getUser->user_id);
-        }
-        return false;
-    }
-
-    /**
-     * @param $username
      * @param null $rememberLogin
      * @return bool
+     * @throws Exception
      */
 
-    public static function Ry_Create_Login($username, $rememberLogin = NULL): bool
-    {
-        if (self::Ry_Login_With_Id(self::Ry_Get_User_Id($username), $rememberLogin)) {
+    public static function createNewLoginWithUsername($username, $rememberLogin = NULL): bool {
+        if(self::check() == true){
+            exit('Authentication Error. User already Logged in.');
+        }
+        if (self::createNewLoginWithId(self::getIdFromUsername($username), $rememberLogin)) {
             return true;
         }
-        return false;
     }
 
     /**
      * @param $user_id
      * @param $rememberLogin
      * @return bool
+     * @throws Exception
      */
 
-    public static function Ry_Login_With_Id($user_id, $rememberLogin): bool
-    {
-        $session = $_SESSION['user_id'] = self::Ry_Create_Login_Session($user_id);
+    public static function createNewLoginWithId($user_id, $rememberLogin): bool {
+        if(self::check() == true){
+            exit('Authentication Error. User already Logged in.');
+        }
+        self::flushOldLogin();
+        $session = $_SESSION['user_id'] = self::createNewUserSession($user_id);
         if($rememberLogin){
-            setcookie("user_id", $session, time() + (10 * 365 * 24 * 60 * 60));
+            Cookie::put('user_id' , $session);
         }
         return true;
     }
@@ -146,24 +107,18 @@ class Auth
      * @return bool
      */
 
-    public static function Ry_Value_Exists(array $data, $table, string $logicalOperator = "AND"): bool
-    {
-
+    public static function checkValueExistence(array $data, $table, string $logicalOperator = "AND"): bool {
         $supported_Logical_Operator = ["AND","OR"];
-
         if(!in_array(strtoupper($logicalOperator),$supported_Logical_Operator)){
             return false;
         }
-
         $attributes = array_keys($data);
         $clause     = ' WHERE ' . implode(strtoupper(" ".$logicalOperator." "), array_map(fn($attr) => "$attr = :$attr", $attributes));
-
         $statement  = Ry_Zen::$main->dbBuilder->pdo->prepare("SELECT * FROM $table $clause");
         foreach ($data as $key => $value) {
             $statement->bindValue(":$key", $value);
         }
         if ($statement->execute() && $statement->rowCount() > 0) {
-
             return true;
         }
         return false;
@@ -171,34 +126,55 @@ class Auth
 
     /**
      * @param int $user_id
-     * @return array|false
+     * @param false $in_array
+     * @return array|false|int|mixed|DbBuilder|string
      */
 
-    public static function Ry_User_Data(int $user_id)
-    {
+    public static function getUserData(int $user_id, bool $in_array = false) {
         if (empty($user_id) || !is_numeric($user_id)) { return false; }
-        return (array) Ry_Zen::$main->dbBuilder->table(Ry_Zen::$main->T_USERS)->where('user_id',Functions::Ry_Secure($user_id))->get();
+        $user_data  =   Ry_Zen::$main->dbBuilder->table(Ry_Zen::$main->T_USERS)->where('user_id',Functions::safeString($user_id))->get();
+        if($in_array == false){
+            return $user_data;
+        }
+        if($in_array == true){
+            return (array) $user_data;
+        }
+    }
+
+    /**
+     * @param $username
+     * @return array|false|string|string[]
+     */
+
+    public static function getIdFromUsername($username)
+    {
+        $username = Functions::safeString($username);
+        $getUser  = Ry_Zen::$main->dbBuilder->table(Ry_Zen::$main->T_USERS)->where('user_email', '=',$username)->orWhere('user_username', '=',$username)->orWhere('user_phone_number', '=',$username)->get();
+
+        if ($getUser && Ry_Zen::$main->dbBuilder->numRows() > 0) {
+            return Functions::safeString($getUser->user_id);
+        }
+        return false;
     }
 
     /**
      * @return bool
      */
 
-    public static function Ry_Sign_Out(): bool
+    public static function logout(): bool
     {
         session_unset();
-        if (Session::has('user_id')) {
-            Ry_Zen::$main->dbBuilder->table(Ry_Zen::$main->T_SESSION)->where('session_id',Session::get('user_id'))->delete();
-            Session::forget('user_id');
+        if(BaseFunctions::checkTable(Ry_Zen::$main->T_SESSION)){
+            if (Session::has('user_id')) {
+                Ry_Zen::$main->dbBuilder->table(Ry_Zen::$main->T_SESSION)->where('session_id',Session::get('user_id'))->delete();
+            }
+            if (Cookie::has('user_id')) {
+                Ry_Zen::$main->dbBuilder->table(Ry_Zen::$main->T_SESSION)->where('session_id',$_COOKIE['user_id'])->delete();
+            }
         }
-        session_destroy();
-        if (isset($_COOKIE['user_id'])) {
-            Ry_Zen::$main->dbBuilder->table(Ry_Zen::$main->T_SESSION)->where('session_id',$_COOKIE['user_id'])->delete();
-            $_COOKIE['user_id'] = '';
-            unset($_COOKIE['user_id']);
-            setcookie('user_id', null, -1);
-            setcookie('user_id', null, -1,'/');
-        }
+        self::flushOldLogin();
+        Session::flush();
+        Cookie::flush();
         $_SESSION = array();
         unset($_SESSION);
         return true;
