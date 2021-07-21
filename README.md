@@ -11,7 +11,7 @@
 
 ```
 If your application is running any version below 1.0.5 donnot update to version
-1.0.5 until and unless you are aware of the huge changes and made in 1.0.5.
+1.0.5 until and unless you are aware of the huge changes made in 1.0.5.
 
 Please refer to documentation before updating.
 ```
@@ -59,6 +59,8 @@ $site_url   = 'http://localhost/YOUR_APPLICATION_ROOT_PATH';
 
 $corelib    =  new Ryzen\CoreLibrary\Ry_Zen($site_url,$config);
 ```
+
+##### Readme only gives you an idea on how to use, refer to doc for entire list of functions.<a href="https://docs.8beez.com/corelib">Core-Library Documentation</a>
 
 ### View
 ```php
