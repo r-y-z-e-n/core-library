@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "ryzen/db-builder",
-            "version": "v1.0.0",
+            "version": "v1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/r-y-z-e-n/db-builder.git",
-                "reference": "72ce911b80cc760eeb0e0d73dfc6ee9ac4e38755"
+                "reference": "2512a6bb2b27f07a5d8c117a39159eb19ddee8b1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/r-y-z-e-n/db-builder/zipball/72ce911b80cc760eeb0e0d73dfc6ee9ac4e38755",
-                "reference": "72ce911b80cc760eeb0e0d73dfc6ee9ac4e38755",
+                "url": "https://api.github.com/repos/r-y-z-e-n/db-builder/zipball/2512a6bb2b27f07a5d8c117a39159eb19ddee8b1",
+                "reference": "2512a6bb2b27f07a5d8c117a39159eb19ddee8b1",
                 "shasum": ""
             },
             "type": "library",
@@ -39,9 +39,9 @@
             "description": "Powerful, Optimized Query Builder For Your PHP projects",
             "support": {
                 "issues": "https://github.com/r-y-z-e-n/db-builder/issues",
-                "source": "https://github.com/r-y-z-e-n/db-builder/tree/v1.0.0"
+                "source": "https://github.com/r-y-z-e-n/db-builder/tree/v1.0.1"
             },
-            "time": "2021-07-07T20:15:35+00:00"
+            "time": "2021-07-17T07:36:25+00:00"
         }
     ],
     "packages-dev": [],

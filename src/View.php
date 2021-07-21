@@ -23,7 +23,7 @@ class View extends Cache
     public static function load(string $viewPath, bool $preferCaching = false){
         if($preferCaching == true){
             self::openCacheDirectory();
-            if(file_exists('./cache/'. $viewPath . '-' . Cookie::get($viewPath))){
+            if(file_exists('./cache/'. $viewPath . '-' . Cookie::get($viewPath) . '.res')){
                 self::$viewContent = file_get_contents('./cache/'. $viewPath . '-' . Cookie::get($viewPath) . '.res');
                 if(!empty(self::$viewContent)){
                     return self::$viewContent;
