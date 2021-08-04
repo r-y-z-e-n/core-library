@@ -7,15 +7,6 @@
 
 ##### Super powerful, Highly optimized and Fully Secured Core PHP Library For Your PHP Web Application.
 
-###IMPORTANT NOTE FOR V1.0.4 AND BELOW ****** DON'T MISS
-
-```
-If your application is running any version below 1.0.5 donnot update to version
-1.0.5 until and unless you are aware of the huge changes made in 1.0.5.
-
-Please refer to documentation before updating.
-```
-
 ### Install
 
 Run the below command in your terminal
@@ -51,6 +42,11 @@ $config = array(
         [
             'users'             =>'users',
             'users_sessions'    =>'users_sessions',
+        ],
+    'auth' =>
+        [
+            'password_hashing_method' => 'bcrypt',
+            'rehash' => false,
         ],
         
 );

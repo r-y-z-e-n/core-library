@@ -5,12 +5,6 @@ namespace Ryzen\CoreLibrary;
 use PDO;
 use Ryzen\DbBuilder\DbBuilder;
 
-/**
- * @author razoo.choudhary@gmail.com
- * Class Ry_Zen
- * @package Ryzen\CoreLibrary
- */
-
 class Ry_Zen
 {
 
@@ -31,6 +25,8 @@ class Ry_Zen
     public string $Root_DIR;
     public string $T_SESSION;
     public string $encMethod;
+    public string $hashMethod;
+    public bool $rehash;
 
     /**
      * @var string
@@ -55,6 +51,8 @@ class Ry_Zen
         $this->Root_DIR     =   $Root_DIRECTORY;
         $this->password     =   $config['encryption_method']['password'];
         $this->encMethod    =   $config['encryption_method']['encryptionMethod'];
+        $this->hashMethod   =   $config['auth']['password_hashing_method'];
+        $this->rehash       =   (!empty($config['auth']['rehash'])) ? $config['auth']['rehash'] : false;
         $this->T_USERS      =   (!empty($config['default_tables']['users'])) ? $config['default_tables']['users'] : 'users';
         $this->T_SESSION    =   (!empty($config['default_tables']['users_sessions'])) ? $config['default_tables']['users_sessions'] : 'users_sessions';
         $this->dbBuilder    =   new DbBuilder($config);

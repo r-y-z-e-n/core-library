@@ -6,12 +6,6 @@ use DateTime;
 use Exception;
 use Ryzen\CoreLibrary\helper\BaseFunctions;
 
-/**
- * @author razoo.choudhary@gmail.com
- * Class Functions
- * @package Ryzen\CoreLibrary
- */
-
 class Functions extends BaseFunctions
 {
 

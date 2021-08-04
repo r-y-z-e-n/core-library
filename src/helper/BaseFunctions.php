@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Ryzen\CoreLibrary\helper;
-
 
 use Ryzen\CoreLibrary\Ry_Zen;
 
@@ -22,5 +20,4 @@ class BaseFunctions
         }
         return true;
     }
-
 }

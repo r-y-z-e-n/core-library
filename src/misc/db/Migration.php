@@ -4,7 +4,12 @@ namespace Ryzen\CoreLibrary\misc\db;
 
 class Migration
 {
-    public static function users( $prefix = ""): string
+    /**
+     * @param string $prefix
+     * @return string
+     */
+
+    public static function users(string $prefix = ""): string
     {
         $tableName = $prefix.'users';
         return "
@@ -18,7 +23,12 @@ class Migration
             ";
     }
 
-    public static function user_session( $prefix = "" ): string
+    /**
+     * @param string $prefix
+     * @return string
+     */
+
+    public static function user_session(string $prefix = "" ): string
     {
         $tableName = $prefix.'users_sessions';
         return "

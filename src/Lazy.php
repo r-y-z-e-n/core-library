@@ -2,12 +2,12 @@
 
 namespace Ryzen\CoreLibrary;
 
-use Ryzen\CoreLibrary\helper\BaseFunctions;
-use Ryzen\CoreLibrary\misc\db\Migration;
 use ZipArchive;
 use RecursiveIteratorIterator;
 use RecursiveDirectoryIterator;
 use Ryzen\CoreLibrary\helper\FileSystem;
+use Ryzen\CoreLibrary\misc\db\Migration;
+use Ryzen\CoreLibrary\helper\BaseFunctions;
 
 class Lazy extends FileSystem
 {
@@ -94,7 +94,12 @@ class Lazy extends FileSystem
         return false;
     }
 
-    public static function migrateDefaults( $tablePrefix = ""): bool{
+    /**
+     * @param string $tablePrefix
+     * @return bool
+     */
+
+    public static function migrateDefaults(string $tablePrefix = ""): bool{
         if(!empty($tablePrefix)){
             $tablePrefix .= '_';
         }

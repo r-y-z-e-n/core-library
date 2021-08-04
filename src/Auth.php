@@ -3,15 +3,10 @@
 namespace Ryzen\CoreLibrary;
 
 use Exception;
-use Ryzen\CoreLibrary\helper\Authentication;
 use Ryzen\DbBuilder\DbBuilder;
+use Ryzen\CoreLibrary\misc\token\BaseHash;
 use Ryzen\CoreLibrary\helper\BaseFunctions;
-
-/**
- * @author razoo.choudhary@gmail.com
- * Class Auth
- * @package Ryzen\CoreLibrary
- */
+use Ryzen\CoreLibrary\helper\Authentication;
 
 class Auth extends Authentication
 {
@@ -58,7 +53,10 @@ class Auth extends Authentication
         $username = Functions::safeString($username);
         $getUser  = Ry_Zen::$main->dbBuilder->table(Ry_Zen::$main->T_USERS)->where('user_email', '=',$username)->orWhere('user_username', '=',$username)->orWhere('user_phone_number', '=',$username)->get();
         if ($getUser && Ry_Zen::$main->dbBuilder->numRows() > 0) {
-            if (password_verify(Functions::safeString($password), $getUser->user_password)) {
+            if(Authentication::validate_hash($password, $getUser->user_password)){
+                if((new BaseHash)->rehash($password)){
+                    self::updateLoginHash((new BaseHash)->rehash($password));
+                }
                 return true;
             }
         }

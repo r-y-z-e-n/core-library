@@ -7,6 +7,8 @@ use Ryzen\CoreLibrary\Cookie;
 use Ryzen\CoreLibrary\Ry_Zen;
 use Ryzen\CoreLibrary\Session;
 use Ryzen\CoreLibrary\Functions;
+use Ryzen\CoreLibrary\event\Hash;
+use Ryzen\CoreLibrary\misc\token\BaseHash;
 
 class Authentication
 {
@@ -46,7 +48,7 @@ class Authentication
             $statement  = Ry_Zen::$main->dbBuilder->table(Ry_Zen::$main->T_SESSION)->select('*')->where('session_id',$session_id)->limit(1)->get();
             if (Ry_Zen::$main->dbBuilder->numRows() > 0) {
                 if (empty($statement->platform_details) && $statement->platform == 'web') {
-                    $userBrowser = json_encode(Functions::Ry_Get_Browser());
+                    $userBrowser = json_encode(Functions::getUserBrowser());
                     if (isset($statement->platform_details)) {
                         Ry_Zen::$main->dbBuilder->table(Ry_Zen::$main->T_SESSION)->where('id','=',$statement->id)->update(['platform_details' => $userBrowser]);
                     }
@@ -85,6 +87,27 @@ class Authentication
     }
 
     /**
+     * @param $clearString
+     * @param $encryptedString
+     * @return bool
+     */
+
+    protected static function validate_hash($clearString, $encryptedString): bool
+    {
+        if((new BaseHash)->getHashingType() == 'bcrypt' || Ry_Zen::$main->rehash == true){
+            if(Hash::check($clearString, $encryptedString)){
+                return true;
+            }
+        }
+        if((new BaseHash)->getHashingType() == 'md5'){
+            if(md5($clearString) == $encryptedString){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * @return bool
      */
 
@@ -102,5 +125,18 @@ class Authentication
             Cookie::forget('user_session');
         }
         return true;
+    }
+
+    /**
+     * @param $hashedString
+     * @return bool
+     */
+
+    protected static function updateLoginHash($hashedString): bool {
+        if(empty($hashedString)){ return false; }
+        if(Ry_Zen::$main->dbBuilder->table(Ry_Zen::$main->T_USERS)->update(['user_password'=>$hashedString])){
+            return true;
+        }
+        return false;
     }
 }
