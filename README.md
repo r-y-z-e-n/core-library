@@ -136,6 +136,27 @@ Cookie::get();
 Session::put();
 ```
 
+### Hashing
+```php
+# Example
+
+Hash::make('SomethingStrongPassword');
+```
+
+### Generate
+```php
+# Example
+
+# Generates Random Password ( accepts length as Parameter Default is 8 )
+Generate::password();
+
+# Generates Random Key ( accepts length as parameter Default is 32 )
+Generate::key();
+
+# Generates Random Token ( accepts length as parameter Default is 22)
+Generate::token();
+```
+
 ### Database Builder
 ```php
 # Inbuilt

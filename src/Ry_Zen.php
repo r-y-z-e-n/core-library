@@ -20,21 +20,15 @@ class Ry_Zen
      * @var string|mixed
      */
 
-    public string $T_USERS;
-    public string $password;
-    public string $Root_DIR;
-    public string $T_SESSION;
-    public string $encMethod;
-    public string $hashMethod;
-    public bool $rehash;
-
-    /**
-     * @var string
-     */
-
-    public string $content       = '';
-    public string $theme_url     = './resources/view/';
-    public string $viewExtension = 'php';
+    public string  $T_USERS;
+    public string  $password;
+    public string  $Root_DIR;
+    public string  $T_SESSION;
+    public string  $encMethod;
+    public string  $hashMethod;
+    public bool    $rehash;
+    public string  $theme_url     = './resources/view/';
+    public string  $viewExtension = 'php';
 
     /**
      * Ry_Zen constructor.

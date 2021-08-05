@@ -4,21 +4,27 @@ namespace Ryzen\CoreLibrary;
 
 class Cookie
 {
+
     /**
-     * @param $cookieSet
-     * @param null $value
+     * @param $cookieName
+     * @param null $cookieValue
+     * @param null $cookieExpiry
+     * @param null $cookiePath
+     * @param null $cookieDomain
+     * @param null $cookieSecurity
      * @return bool|string
      */
 
-    public static function put($cookieSet, $value = null){
+    public static function put($cookieName, $cookieValue = null, $cookieExpiry = null, $cookiePath = null, $cookieDomain = null, $cookieSecurity = null){
         $put = '';
-        if(is_array($cookieSet)){
-            foreach ($cookieSet as $key => $value){
-                $put = setcookie($key, Functions::safeString($value), time() + (10 * 365 * 24 * 60 * 60));
+        $cookieExpiry = (!empty($cookieExpiry)) ? $cookieExpiry : time() + (10 * 365 * 24 * 60 * 60);
+        if(is_array($cookieName)){
+            foreach ($cookieName as $key => $cookieValue){
+                $put = setcookie($key, Functions::safeString($cookieValue), $cookieExpiry, $cookiePath, $cookieDomain, $cookieSecurity);
             }
         }
-        if(is_string($cookieSet)){
-            $put = setcookie($cookieSet, Functions::safeString($value), time() + (10 * 365 * 24 * 60 * 60));
+        if(is_string($cookieName)){
+            $put = setcookie($cookieName, Functions::safeString($cookieValue), $cookieExpiry, $cookiePath, $cookieDomain, $cookieSecurity);
         }
         return $put;
     }

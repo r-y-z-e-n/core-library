@@ -49,7 +49,7 @@ class Auth extends Authentication
      * @return bool
      */
 
-    public static function validateCredentials($username, $password): bool {
+    public static function attempt($username, $password): bool {
         $username = Functions::safeString($username);
         $getUser  = Ry_Zen::$main->dbBuilder->table(Ry_Zen::$main->T_USERS)->where('user_email', '=',$username)->orWhere('user_username', '=',$username)->orWhere('user_phone_number', '=',$username)->get();
         if ($getUser && Ry_Zen::$main->dbBuilder->numRows() > 0) {
@@ -77,6 +77,7 @@ class Auth extends Authentication
         if (self::createNewLoginWithId(self::getIdFromUsername($username), $rememberLogin)) {
             return true;
         }
+        return false;
     }
 
     /**
@@ -137,6 +138,7 @@ class Auth extends Authentication
         if($in_array == true){
             return (array) $user_data;
         }
+        return false;
     }
 
     /**
