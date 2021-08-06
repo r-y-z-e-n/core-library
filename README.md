@@ -35,18 +35,22 @@ $config = array(
         ],
     'encryption_method' =>
         [
-            'encryptionMethod'  =>'AES-128-CBC',
-            'password'          =>'YOUR_SECRET_ENCRYPTION_KEY'
+            'encryptionMethod'  =>  'AES-128-CBC',
+            'password'          =>  'YOUR_SECRET_ENCRYPTION_KEY'
         ],
     'default_tables' =>
         [
-            'users'             =>'users',
-            'users_sessions'    =>'users_sessions',
+            'users'             =>  'users',
+            'users_sessions'    =>  'users_sessions',
         ],
     'auth' =>
         [
             'password_hashing_method' => 'bcrypt',
             'rehash' => false,
+        ],
+    'application' =>
+        [
+            'production' => false,
         ],
         
 );

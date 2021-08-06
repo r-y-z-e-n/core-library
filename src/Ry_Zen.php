@@ -4,6 +4,8 @@ namespace Ryzen\CoreLibrary;
 
 use PDO;
 use Ryzen\DbBuilder\DbBuilder;
+use Ryzen\CoreLibrary\config\Application;
+use Ryzen\CoreLibrary\misc\dev\Debugging;
 
 class Ry_Zen
 {
@@ -38,18 +40,31 @@ class Ry_Zen
 
     public function __construct(string $Root_DIRECTORY, $config)
     {
+        self::$main         =   $this;
+        self::init( $config );
+        $this->Root_DIR     =   $Root_DIRECTORY;
+        $this->password     =   ( isset($config['encryption_method']['password']) && !empty($config['encryption_method']['password']) ? $config['encryption_method']['password'] : (new Application())->AppKey());
+        $this->encMethod    =   ( isset($config['encryption_method']['encryptionMethod']) && !empty($config['encryption_method']['encryptionMethod']) ? $config['encryption_method']['encryptionMethod'] : 'AES-128-CBC');
+        $this->hashMethod   =   ( isset($config['auth']['password_hashing_method']) && !empty($config['auth']['password_hashing_method']) ? $config['auth']['password_hashing_method'] : 'bcrypt');
+        $this->rehash       =   ( isset($config['auth']['rehash']) && !empty($config['auth']['rehash'])) ? $config['auth']['rehash'] : false;
+        $this->T_USERS      =   ( isset($config['default_tables']['users']) && !empty($config['default_tables']['users'])) ? $config['default_tables']['users'] : 'users';
+        $this->T_SESSION    =   ( isset($config['default_tables']['users_sessions']) && !empty($config['default_tables']['users_sessions'])) ? $config['default_tables']['users_sessions'] : 'users_sessions';
+        $this->dbBuilder    =   new DbBuilder($config);
+        $this->pdo          =   $this->dbBuilder->pdo;
+    }
+
+    /**
+     * @param array $config
+     */
+
+    public static function init( array $config ){
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
-        self::$main         =   $this;
-        $this->Root_DIR     =   $Root_DIRECTORY;
-        $this->password     =   $config['encryption_method']['password'];
-        $this->encMethod    =   $config['encryption_method']['encryptionMethod'];
-        $this->hashMethod   =   $config['auth']['password_hashing_method'];
-        $this->rehash       =   (!empty($config['auth']['rehash'])) ? $config['auth']['rehash'] : false;
-        $this->T_USERS      =   (!empty($config['default_tables']['users'])) ? $config['default_tables']['users'] : 'users';
-        $this->T_SESSION    =   (!empty($config['default_tables']['users_sessions'])) ? $config['default_tables']['users_sessions'] : 'users_sessions';
-        $this->dbBuilder    =   new DbBuilder($config);
-        $this->pdo          =   $this->dbBuilder->pdo;
+        if( isset($config['application']['production']) && $config['application']['production'] === true){
+            Debugging::preventDebugging(true);
+        }else{
+            Debugging::preventDebugging(false);
+        }
     }
 }

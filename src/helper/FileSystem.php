@@ -36,4 +36,13 @@ class FileSystem
         }
         return false;
     }
+
+    /**
+     * @param string $filePath
+     * @return false|string
+     */
+    
+    public static function getFileContent( string $filePath){
+        return file_get_contents( $filePath );
+    }
 }
