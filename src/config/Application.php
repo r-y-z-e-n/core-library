@@ -7,7 +7,7 @@ use Ryzen\CoreLibrary\helper\FileSystem;
 
 class Application
 {
-    private string $keyPath = '../src/misc/keys';
+    private string $keyPath = './keys';
 
     /**
      * @return false|string
