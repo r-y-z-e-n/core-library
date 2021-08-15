@@ -161,6 +161,44 @@ Generate::key();
 Generate::token();
 ```
 
+### Validation
+```php
+# structure
+
+Validator::make([ 'INPUT_FIELD_NAME' => 'RULES' ]);
+
+# Making new Validation
+Validator::make([
+    'first_name'    =>  'required|min|5|max|10',
+    'user_email'    =>  'required|unique|np_users',
+])
+
+# Getting Validation Error
+Validator::error(); // Returns Set of errors in array;
+Validator::error('first_name'); // returns error of input firs_name;
+
+# Checking Validation Passed or Failed
+Validator::passed();
+Validator::failed();
+
+# Changing default validation message
+# {key} -> Defines input field name
+# {val} -> Defines values of test case in rule max|15, here 15 is val
+# {matching.key} -> Defines input field to match with
+
+ValidationMessage::$required = '{key} YOUR TEXT';
+```
+
+#### Validation RULES
+```php
+-- required
+-- max|15   # 15 is the value assigned as maximum
+-- min|10   # 10 is the value assigned as minimum
+-- date
+-- matches|c_password # Matches value with c_password input field
+-- unique|np_users # check unique value in table np_users [column check is its key you assign rule with]
+```
+
 ### Database Builder
 ```php
 # Inbuilt

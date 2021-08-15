@@ -40,6 +40,19 @@ class Functions extends BaseFunctions
     }
 
     /**
+     * @param array $requestData
+     * @return array
+     */
+
+    public static function safeRequest(array $requestData): array {
+        foreach ($requestData as $key => $value){
+            $value             = preg_replace('/on[^<>=]+=[^<>]*/m', '', $value);
+            $requestData[$key] = self::safeString($value);
+        }
+        return $requestData;
+    }
+
+    /**
      * @param $string
      * @return array|string|string[]|null
      */
@@ -64,14 +77,17 @@ class Functions extends BaseFunctions
 
     /**
      * @param string $token
+     * @param bool $is_csrf_one_use
      * @return bool
      * @throws Exception
      */
 
-    public static function checkCsrf(string $token): bool
+    public static function checkCsrf(string $token, bool $is_csrf_one_use = false): bool
     {
         if (Session::has('csrf_token') && Session::get('csrf_token') !== '' && hash_equals($token, Session::get('csrf_token'))) {
-            Session::forget('csrf_token') && self::generateCsrf();
+            if($is_csrf_one_use){
+                Session::forget('csrf_token') && self::generateCsrf();
+            }
             return true;
         }
         return false;
