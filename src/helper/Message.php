@@ -30,5 +30,17 @@ class Message
         if($messageKey == 'date'){
             return ValidationMessage::$date;
         }
+        if($messageKey == 'email'){
+            return ValidationMessage::$email;
+        }
+        if($messageKey == 'url'){
+            return ValidationMessage::$url;
+        }
+        if($messageKey == 'starts_with'){
+            return ValidationMessage::$starts_with;
+        }
+        if($messageKey == 'end_with'){
+            return ValidationMessage::$end_with;
+        }
     }
 }

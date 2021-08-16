@@ -10,12 +10,16 @@ use Ryzen\CoreLibrary\config\Application;
 
 class Validate extends Application
 {
-    private static string $RULE_REQUIRED = 'required';
-    private static string $RULE_UNIQUE   = 'unique';
-    private static string $RULE_MINIMUM  = 'min';
-    private static string $RULE_MAXIMUM  = 'max';
-    private static string $RULE_MATCHES  = 'match';
-    private static string $RULE_DATE     = 'date';
+    private static string $RULE_REQUIRED    = 'required';
+    private static string $RULE_UNIQUE      = 'unique';
+    private static string $RULE_MINIMUM     = 'min';
+    private static string $RULE_MAXIMUM     = 'max';
+    private static string $RULE_MATCHES     = 'match';
+    private static string $RULE_DATE        = 'date';
+    private static string $RULE_EMAIL       = 'email';
+    private static string $RULE_URL         = 'url';
+    private static string $RULE_START_WITH  = 'starts_with';
+    private static string $RULE_END_WITH    = 'ends_with';
 
     /**
      * @param $needle
@@ -91,6 +95,41 @@ class Validate extends Application
             $d = DateTime::createFromFormat('Y-m-d', $acceptedDateFormat);
             if(($d && $d->format('Y-m-d') === $acceptedDateFormat) == false){
                 return str_replace('{key}',self::get_key($key, $validationRule), Message::validation('date'));
+            }
+        }
+
+        if(in_array(self::$RULE_EMAIL, $validationRule)){
+            if(!filter_var($fieldOnMethod, FILTER_VALIDATE_EMAIL)){
+                return str_replace('{key}',self::get_key($key, $validationRule), Message::validation('email'));
+            }
+        }
+
+        if(in_array(self::$RULE_URL, $validationRule)){
+            $path         = parse_url($fieldOnMethod, PHP_URL_PATH);
+            $encoded_path = array_map('urlencode', explode('/', $path));
+            $url          = str_replace($path, implode('/', $encoded_path), $fieldOnMethod);
+            if(!filter_var($url, FILTER_VALIDATE_URL)){
+                return str_replace('{key}',self::get_key($key, $validationRule), Message::validation('url'));
+            }
+        }
+
+        if(in_array(self::$RULE_START_WITH, $validationRule)){
+            if (substr($fieldOnMethod, 0, 1) !== self::getNextIndexValue(self::$RULE_START_WITH, $validationRule)){
+                return str_replace(
+                    ['{key}', '{val}'],
+                    [self::get_key($key, $validationRule), self::getNextIndexValue(self::$RULE_START_WITH, $validationRule)],
+                    Message::validation('starts_with')
+                );
+            }
+        }
+
+        if(in_array(self::$RULE_END_WITH, $validationRule)){
+            if (substr($fieldOnMethod, -1) !== self::getNextIndexValue(self::$RULE_END_WITH, $validationRule)){
+                return str_replace(
+                    ['{key}', '{val}'],
+                    [self::get_key($key, $validationRule), self::getNextIndexValue(self::$RULE_END_WITH, $validationRule)],
+                    Message::validation('end_with')
+                );
             }
         }
     }

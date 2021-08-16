@@ -16,12 +16,12 @@ class View extends Cache
 
     /**
      * @param string $viewPath
-     * @param bool $preferCaching
+     * @param mixed $viewOptions
      * @return false|string
      */
 
-    public static function load(string $viewPath, bool $preferCaching = false){
-        if($preferCaching == true){
+    public static function load(string $viewPath, $viewOptions = false){
+        if(!is_array($viewOptions) && !is_string($viewOptions) && $viewOptions === true){
             self::openCacheDirectory();
             if(file_exists('./cache/'. $viewPath . '-' . Cookie::get($viewPath) . '.res')){
                 self::$viewContent = file_get_contents('./cache/'. $viewPath . '-' . Cookie::get($viewPath) . '.res');
@@ -30,6 +30,11 @@ class View extends Cache
                 }
             }else{
                 self::$makeNewCache = true;
+            }
+        }
+        if(is_array($viewOptions)){
+            foreach ($viewOptions as $key => $value){
+                $$key = $value;
             }
         }
         ob_start();
