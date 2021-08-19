@@ -15,6 +15,7 @@
         }
     ],
     "require": {
-        "ryzen/db-builder": "^1.0"
+        "ryzen/db-builder": "^1.0",
+        "ryzen/oauth": "^1.0"
     }
 }

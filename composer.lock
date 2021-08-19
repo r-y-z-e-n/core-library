@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "55cdfe99ac300b77888065a6253bfc19",
+    "content-hash": "64c805ed9fa13f91360d407992a28126",
     "packages": [
         {
             "name": "ryzen/db-builder",
@@ -42,6 +42,42 @@
                 "source": "https://github.com/r-y-z-e-n/db-builder/tree/v1.0.1"
             },
             "time": "2021-07-17T07:36:25+00:00"
+        },
+        {
+            "name": "ryzen/oauth",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/r-y-z-e-n/php-oauth.git",
+                "reference": "86c942efd50e0413cffdc205148de61b9d6344ec"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/r-y-z-e-n/php-oauth/zipball/86c942efd50e0413cffdc205148de61b9d6344ec",
+                "reference": "86c942efd50e0413cffdc205148de61b9d6344ec",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Ryzen\\Oauth\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ry-Zen, Inc.",
+                    "email": "razoo.choudhary@gmail.com"
+                }
+            ],
+            "support": {
+                "issues": "https://github.com/r-y-z-e-n/php-oauth/issues",
+                "source": "https://github.com/r-y-z-e-n/php-oauth/tree/v1.0.0"
+            },
+            "time": "2021-08-19T08:13:48+00:00"
         }
     ],
     "packages-dev": [],

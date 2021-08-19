@@ -6,6 +6,7 @@ use PDO;
 use Ryzen\DbBuilder\DbBuilder;
 use Ryzen\CoreLibrary\config\Application;
 use Ryzen\CoreLibrary\misc\dev\Debugging;
+use Ryzen\Oauth\Oauth;
 
 class Ry_Zen
 {
@@ -15,6 +16,7 @@ class Ry_Zen
      */
 
     public ?PDO $pdo;
+    public  $oauth;
     public DbBuilder $dbBuilder;
     public static Ry_Zen $main;
 
@@ -51,6 +53,7 @@ class Ry_Zen
         $this->T_SESSION    =   ( isset($config['default_tables']['users_sessions']) && !empty($config['default_tables']['users_sessions'])) ? $config['default_tables']['users_sessions'] : 'users_sessions';
         $this->dbBuilder    =   new DbBuilder($config);
         $this->pdo          =   $this->dbBuilder->pdo;
+        $this->oauth        =   new Oauth($config['oauth']);
     }
 
     /**

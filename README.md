@@ -52,6 +52,12 @@ $config = array(
         [
             'production' => false,
         ],
+    'oauth' =>
+        [
+            'app_id'        => 'YOUR_APP_ID',
+            'app_secret'    => 'YOUR_SECRET_KEY',
+            'app_url'       => 'RY-ZENS HOMEPAGE URL',
+        ],
         
 );
 
@@ -208,6 +214,11 @@ $corelib->dbbuilder->table('users')->getAll();
 
 $statement  = $corelib->dbbuilder->pdo->prepare('SELECT * FROM users');
 $statement->execute();
+```
+
+### Oauth
+```php
+$user_data = $corelib->oauth->init(); // Stores user data if success or error message.
 ```
 
 ### Documentation

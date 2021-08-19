@@ -30,7 +30,7 @@ class Session
 
     public static function get($key){
         if(self::has($key)){
-            return Functions::safeString($_SESSION[$key]);
+            return $_SESSION[$key];
         }
         return false;
     }
