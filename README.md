@@ -9,64 +9,13 @@
 
 ### Install
 
-Run the below command in your terminal
+Using Core Library now Requires .env File as its configuration listing
+
+Quick Install  <a href="https://github.com/r-y-z-e-n/lazyphp">Lazy PHP Documentation</a>
+
 ```
-$ composer require ryzen/core-library
+$ composer create-project ryzen/lazyphp my-project
 ```
-
-Finally, Import the autoloader and create new object with configuration
-```php
-<?php
-
-include 'vendor/autoload.php';
-
-$config = array(
-
-    'mysql_database_config' =>
-        [
-            'db_host'       => "YOUR_DATABASE_HOST",
-            'db_name'       => "YOUR_DATABASE_NAME",
-            'db_user'       => "YOUR_DATABASE_USER",
-            'db_pass'       => "YOUR_DATABASE_PASS",
-            'db_driver'     => 'mysql',
-            'db_charset'    => 'utf8',
-            'db_collation'  => 'utf8_general_ci',
-            'db_prefix'     => ''
-        ],
-    'encryption_method' =>
-        [
-            'encryptionMethod'  =>  'AES-128-CBC',
-            'password'          =>  'YOUR_SECRET_ENCRYPTION_KEY'
-        ],
-    'default_tables' =>
-        [
-            'users'             =>  'users',
-            'users_sessions'    =>  'users_sessions',
-        ],
-    'auth' =>
-        [
-            'password_hashing_method' => 'bcrypt',
-            'rehash' => false,
-        ],
-    'application' =>
-        [
-            'production' => false,
-        ],
-    'oauth' =>
-        [
-            'app_id'        => 'YOUR_APP_ID',
-            'app_secret'    => 'YOUR_SECRET_KEY',
-            'app_url'       => 'RY-ZENS HOMEPAGE URL',
-        ],
-        
-);
-
-$site_url   = 'http://localhost/YOUR_APPLICATION_ROOT_PATH';
-
-$corelib    =  new Ryzen\CoreLibrary\Ry_Zen($site_url,$config);
-```
-
-##### Readme only gives you an idea on how to use, refer to doc for entire list of functions.<a href="https://docs.8beez.com/corelib">Core-Library Documentation</a>
 
 ### View
 ```php
