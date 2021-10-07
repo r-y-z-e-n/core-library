@@ -85,7 +85,7 @@ class Validate extends Application
         if(in_array(self::$RULE_MATCHES, $validationRule)){
             $toMatch = self::getNextIndexValue(self::$RULE_MATCHES, $validationRule);
             if($fieldOnMethod !== self::getMethod($toMatch)){
-                return str_replace(['{key}', '{matching.key}'],[self::get_key($key, $validationRule), self::get_key($toMatch, $validationRule)], Message::validation('matches'));
+                return str_replace(['{key}', '{matching.key}'],[self::get_key($key, $validationRule), $validationRule[array_search('match',$validationRule) + 2]], Message::validation('matches'));
             }
         }
 

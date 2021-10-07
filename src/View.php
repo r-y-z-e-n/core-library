@@ -38,7 +38,7 @@ class View extends Cache
             }
         }
         ob_start();
-        $page = Ry_Zen::$main->theme_url . $viewPath . '.' . Ry_Zen::$main->viewExtension;
+        $page = Ry_Zen::$main->View_Path . $viewPath . '.' . Ry_Zen::$main->View_Extension;
         require "{$page}";
         self::$viewContent = ob_get_contents();
         ob_end_clean();

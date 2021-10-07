@@ -18,7 +18,6 @@ class Functions extends BaseFunctions
 
     public static function safeString($string, bool $breakString = true, int $strip = 0)
     {
-
         $string = htmlspecialchars(self::cleanString(trim($string)), ENT_QUOTES);
 
         if ($breakString == true) {
@@ -162,10 +161,10 @@ class Functions extends BaseFunctions
     public static function encrypt($data): string
     {
         $iv         = substr(sha1(mt_rand()), 0, 16);
-        $password   = sha1(Ry_Zen::$main->password);
+        $password   = sha1(Ry_Zen::$main->Encryption_Password);
         $salt       = sha1(mt_rand());
         $saltWithPassword = hash('sha256', $password, $salt);
-        $encryption = openssl_encrypt(self::safeString($data, false), Ry_Zen::$main->encMethod, "$saltWithPassword", null, $iv);
+        $encryption = openssl_encrypt(self::safeString($data, false), Ry_Zen::$main->Encryption_Method, "$saltWithPassword", null, $iv);
         $keyChar    = "$iv:$salt:$encryption";
         if(strtolower(self::decrypt($keyChar)) == strtolower($data)){
             return $keyChar;
@@ -181,12 +180,12 @@ class Functions extends BaseFunctions
 
     public static function decrypt($encryptedData){
 
-        $password       = sha1(Ry_Zen::$main->password);
+        $password       = sha1(Ry_Zen::$main->Encryption_Password);
         $components     = explode(':', $encryptedData);
         $iv             = $components[0];
         $salt           = hash('sha256', $password,$components[1]);
         $encrypted_data = $components[2];
-        $decryption     = openssl_decrypt($encrypted_data, Ry_Zen::$main->encMethod, $salt,null, $iv);
+        $decryption     = openssl_decrypt($encrypted_data, Ry_Zen::$main->Encryption_Method, $salt,null, $iv);
         if($decryption === false)
             return false;
         substr(self::safeString($decryption, false), 41);

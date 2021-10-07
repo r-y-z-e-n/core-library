@@ -44,13 +44,13 @@ class Authentication
 
     protected static function getLoggedUserSession(string $session_id, string $platform = 'web') {
         $session_id = Functions::safeString($session_id);
-        if(BaseFunctions::checkTable(Ry_Zen::$main->T_SESSION)){
-            $statement  = Ry_Zen::$main->dbBuilder->table(Ry_Zen::$main->T_SESSION)->select('*')->where('session_id',$session_id)->limit(1)->get();
+        if(BaseFunctions::checkTable(Ry_Zen::$main->Table_Sessions)){
+            $statement  = Ry_Zen::$main->dbBuilder->table(Ry_Zen::$main->Table_Sessions)->select('*')->where('session_id',$session_id)->limit(1)->get();
             if (Ry_Zen::$main->dbBuilder->numRows() > 0) {
                 if (empty($statement->platform_details) && $statement->platform == 'web') {
                     $userBrowser = json_encode(Functions::getUserBrowser());
                     if (isset($statement->platform_details)) {
-                        Ry_Zen::$main->dbBuilder->table(Ry_Zen::$main->T_SESSION)->where('id','=',$statement->id)->update(['platform_details' => $userBrowser]);
+                        Ry_Zen::$main->dbBuilder->table(Ry_Zen::$main->Table_Sessions)->where('id','=',$statement->id)->update(['platform_details' => $userBrowser]);
                     }
                 }
                 return $statement->user_id;
@@ -67,15 +67,15 @@ class Authentication
     protected static function createNewUserSession(int $user_id = 0){
         $user_id    = Functions::safeString($user_id);
         $hash       = sha1(rand(111111111, 999999999)) . md5(microtime()) . rand(11111111, 99999999) . md5(rand(5555, 9999));
-        if(BaseFunctions::checkTable(Ry_Zen::$main->T_SESSION)){
+        if(BaseFunctions::checkTable(Ry_Zen::$main->Table_Sessions)){
             if ($hash) {
-                Ry_Zen::$main->dbBuilder->table(Ry_Zen::$main->T_SESSION)->where('session_id',$hash)->delete();
-                Ry_Zen::$main->dbBuilder->table(Ry_Zen::$main->T_SESSION)->where('platform_details',json_encode(Functions::getUserBrowser()))->delete();
-                Ry_Zen::$main->dbBuilder->table(Ry_Zen::$main->T_SESSION)->insert(['user_id' => $user_id, 'session_id' => $hash, 'platform' => 'web', 'platform_details' => json_encode(Functions::getUserBrowser())]);
+                Ry_Zen::$main->dbBuilder->table(Ry_Zen::$main->Table_Sessions)->where('session_id',$hash)->delete();
+                Ry_Zen::$main->dbBuilder->table(Ry_Zen::$main->Table_Sessions)->where('platform_details',json_encode(Functions::getUserBrowser()))->delete();
+                Ry_Zen::$main->dbBuilder->table(Ry_Zen::$main->Table_Sessions)->insert(['user_id' => $user_id, 'session_id' => $hash, 'platform' => 'web', 'platform_details' => json_encode(Functions::getUserBrowser())]);
                 return $hash;
             }
         }
-        if(BaseFunctions::checkTable(Ry_Zen::$main->T_SESSION) == false){
+        if(BaseFunctions::checkTable(Ry_Zen::$main->Table_Sessions) == false){
             if($hash){
                 $user_id = Functions::encrypt($user_id);
                 if(Session::put('user_session_storage_id',$user_id) && Cookie::put('user_session_storage_id', $user_id)){
@@ -94,7 +94,7 @@ class Authentication
 
     protected static function validate_hash($clearString, $encryptedString): bool
     {
-        if((new BaseHash)->getHashingType() == 'bcrypt' || Ry_Zen::$main->rehash == true){
+        if((new BaseHash)->getHashingType() == 'bcrypt' || Ry_Zen::$main->Password_ReHash == true){
             if(Hash::check($clearString, $encryptedString)){
                 return true;
             }
@@ -134,7 +134,7 @@ class Authentication
 
     protected static function updateLoginHash($hashedString): bool {
         if(empty($hashedString)){ return false; }
-        if(Ry_Zen::$main->dbBuilder->table(Ry_Zen::$main->T_USERS)->update(['user_password'=>$hashedString])){
+        if(Ry_Zen::$main->dbBuilder->table(Ry_Zen::$main->Table_Users)->update(['user_password'=>$hashedString])){
             return true;
         }
         return false;

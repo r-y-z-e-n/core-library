@@ -27,11 +27,8 @@ class Auth extends Authentication
         return false;
     }
 
-    /**
-     * @return int|string
-     */
-
-    public static function getUserId(){
+    public static function getUserId()
+    {
         if(self::check()){
             $session_id = (!empty(Session::get('user_id'))) ? Session::get('user_id') : Cookie::get('user_id');
             $user_id    = self::getLoggedUserSession($session_id);
@@ -51,7 +48,7 @@ class Auth extends Authentication
 
     public static function attempt($username, $password): bool {
         $username = Functions::safeString($username);
-        $getUser  = Ry_Zen::$main->dbBuilder->table(Ry_Zen::$main->T_USERS)->where('user_email', '=',$username)->orWhere('user_username', '=',$username)->orWhere('user_phone_number', '=',$username)->get();
+        $getUser  = Ry_Zen::$main->dbBuilder->table(Ry_Zen::$main->Table_Users)->where('user_email', '=',$username)->orWhere('user_username', '=',$username)->orWhere('user_phone_number', '=',$username)->get();
         if ($getUser && Ry_Zen::$main->dbBuilder->numRows() > 0) {
             if(Authentication::validate_hash($password, $getUser->user_password)){
                 if((new BaseHash)->rehash($password)){
@@ -129,9 +126,10 @@ class Auth extends Authentication
      * @return array|false|int|mixed|DbBuilder|string
      */
 
-    public static function getUserData(int $user_id, bool $in_array = false) {
+    public static function getUserData(int $user_id, bool $in_array = false)
+    {
         if (empty($user_id) || !is_numeric($user_id)) { return false; }
-        $user_data  =   Ry_Zen::$main->dbBuilder->table(Ry_Zen::$main->T_USERS)->where('user_id',Functions::safeString($user_id))->get();
+        $user_data  =   Ry_Zen::$main->dbBuilder->table(Ry_Zen::$main->Table_Users)->where('user_id',Functions::safeString($user_id))->get();
         if($in_array == false){
             return $user_data;
         }
@@ -149,7 +147,7 @@ class Auth extends Authentication
     public static function getIdFromUsername($username)
     {
         $username = Functions::safeString($username);
-        $getUser  = Ry_Zen::$main->dbBuilder->table(Ry_Zen::$main->T_USERS)->where('user_email', '=',$username)->orWhere('user_username', '=',$username)->orWhere('user_phone_number', '=',$username)->get();
+        $getUser  = Ry_Zen::$main->dbBuilder->table(Ry_Zen::$main->Table_Users)->where('user_email', '=',$username)->orWhere('user_username', '=',$username)->orWhere('user_phone_number', '=',$username)->get();
 
         if ($getUser && Ry_Zen::$main->dbBuilder->numRows() > 0) {
             return Functions::safeString($getUser->user_id);
@@ -164,12 +162,12 @@ class Auth extends Authentication
     public static function logout(): bool
     {
         session_unset();
-        if(BaseFunctions::checkTable(Ry_Zen::$main->T_SESSION)){
+        if(BaseFunctions::checkTable(Ry_Zen::$main->Table_Sessions)){
             if (Session::has('user_id')) {
-                Ry_Zen::$main->dbBuilder->table(Ry_Zen::$main->T_SESSION)->where('session_id',Session::get('user_id'))->delete();
+                Ry_Zen::$main->dbBuilder->table(Ry_Zen::$main->Table_Sessions)->where('session_id',Session::get('user_id'))->delete();
             }
             if (Cookie::has('user_id')) {
-                Ry_Zen::$main->dbBuilder->table(Ry_Zen::$main->T_SESSION)->where('session_id',$_COOKIE['user_id'])->delete();
+                Ry_Zen::$main->dbBuilder->table(Ry_Zen::$main->Table_Sessions)->where('session_id',$_COOKIE['user_id'])->delete();
             }
         }
         self::flushOldLogin();

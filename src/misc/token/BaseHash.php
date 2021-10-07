@@ -14,8 +14,8 @@ class BaseHash
      */
 
     public function getHashingType(){
-        if(in_array(Ry_Zen::$main->hashMethod, $this->supportedHash)){
-            return Ry_Zen::$main->hashMethod;
+        if(in_array(Ry_Zen::$main->Hashing_Method, $this->supportedHash)){
+            return Ry_Zen::$main->Hashing_Method;
         }
         return 'bcrypt';
     }
@@ -26,7 +26,7 @@ class BaseHash
      */
 
     public function rehash($clearString){
-        if(Ry_Zen::$main->rehash == true){
+        if(Ry_Zen::$main->Password_ReHash == true){
             return Hash::make($clearString);
         }
         return false;
