@@ -2,6 +2,7 @@
 
 namespace Ryzen\CoreLibrary;
 
+use mysqli;
 use ZipArchive;
 use RecursiveIteratorIterator;
 use RecursiveDirectoryIterator;
@@ -125,24 +126,22 @@ class Lazy
      */
     private static function sqlBackUp($folder_name, $tables = false): bool
     {
-        $query_tables = Ry_Zen::$main->dbBuilder->pdo->query('SHOW TABLES');
-        while($row = $query_tables->fetch()){
-            $row = (array) $row;
-            $target_tables[]    =   $row['Tables_in_'.strtolower($_ENV['database_name'])];
+        $mysqli = new mysqli($_ENV['database_hostname'], $_ENV['database_username'], $_ENV['database_password'], $_ENV['database_name']);
+        $mysqli->select_db($_ENV['database_name']);
+        $mysqli->query("SET NAMES 'utf8'");
+        $queryTables = $mysqli->query('SHOW TABLES');
+        while ($row = $queryTables->fetch_row()) {
+            $target_tables[] = $row[0];
         }
-
-        /**
-         * @var $target_tables;
-         */
-
-        if($tables !== false) {$target_tables = array_intersect($target_tables, $tables);}
-
+        if ($tables !== false) {
+            $target_tables = array_intersect($target_tables, $tables);
+        }
         $content = "-- phpMyAdmin SQL Dump
 -- http://www.phpmyadmin.net
 --
--- Host Connection Info: " . 'host_info' . "
+-- Host Connection Info: " . $mysqli->host_info . "
 -- Generation Time: " . date('F d, Y \a\t H:i A ( e )') . "
--- Server version: " . 'server info' . "
+-- Server version: " . mysqli_get_server_info($mysqli) . "
 -- PHP Version: " . PHP_VERSION . "
 --\n
 SET SQL_MODE = \"NO_AUTO_VALUE_ON_ZERO\";
@@ -151,20 +150,19 @@ SET time_zone = \"+00:00\";\n
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;\n\n";
-        $db = Ry_Zen::$main->dbBuilder;
         foreach ($target_tables as $table) {
-            $result        = $db->query('SELECT * FROM ' . $table);
-            $fields_amount = $result->queryCount();
-            $rows_num      = $db->numRows();
-            $res           = $db->query('SHOW CREATE TABLE ' . $table);
-            $TableMLine    = (array) $res->fetch();
+            $result        = $mysqli->query('SELECT * FROM ' . $table);
+            $fields_amount = $result->field_count;
+            $rows_num      = $mysqli->affected_rows;
+            $res           = $mysqli->query('SHOW CREATE TABLE ' . $table);
+            $TableMLine    = $res->fetch_row();
             $content       = (!isset($content) ? '' : $content) . "
 -- ---------------------------------------------------------
 --
 -- Table structure for table : `{$table}`
 --
 -- ---------------------------------------------------------
-\n" . $TableMLine['Create Table'] . ";\n";
+\n" . $TableMLine[1] . ";\n";
             for ($i = 0, $st_counter = 0; $i < $fields_amount; $i++, $st_counter = 0) {
                 while ($row = $result->fetch_row()) {
                     if ($st_counter % 100 == 0 || $st_counter == 0) {
@@ -201,7 +199,10 @@ SET time_zone = \"+00:00\";\n
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;";
 
         $put_content    =   @file_put_contents($folder_name . '/SQL-BACKUP/SQL-BACKUP-' . date('Y-m-d') . '.sql', $content);
-        if($put_content) return true;
+        if($put_content) {
+            $mysqli->close();
+            return true;
+        }
         return false;
     }
 }

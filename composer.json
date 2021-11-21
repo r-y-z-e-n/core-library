@@ -20,6 +20,7 @@
         "ryzen/oauth": "^1.0",
         "vlucas/phpdotenv": "^5.3",
         "ext-zip": "*",
-        "ext-json": "*"
+        "ext-json": "*",
+        "ext-mysqli": "*"
     }
 }
