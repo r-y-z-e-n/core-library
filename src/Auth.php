@@ -161,7 +161,6 @@ class Auth extends Authentication
 
     public static function logout(): bool
     {
-        session_unset();
         if(BaseFunctions::checkTable(Ry_Zen::$main->Table_Sessions)){
             if (Session::has('user_id')) {
                 Ry_Zen::$main->dbBuilder->table(Ry_Zen::$main->Table_Sessions)->where('session_id',Session::get('user_id'))->delete();
@@ -175,6 +174,7 @@ class Auth extends Authentication
         Cookie::flush();
         $_SESSION = array();
         unset($_SESSION);
+        session_unset();
         return true;
     }
 }

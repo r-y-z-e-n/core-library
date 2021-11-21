@@ -7,7 +7,7 @@ use Ryzen\CoreLibrary\Cookie;
 
 class Cache
 {
-    public static function openCacheDirectory(){
+    protected static function openCacheDirectory(){
         if(!file_exists('./cache')){
             $oldmask = umask(0);
             @mkdir('./cache', 0777, true);

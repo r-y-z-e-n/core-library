@@ -18,6 +18,8 @@
         "ext-openssl": "*",
         "ryzen/db-builder": "^1.0",
         "ryzen/oauth": "^1.0",
-        "vlucas/phpdotenv": "^5.3"
+        "vlucas/phpdotenv": "^5.3",
+        "ext-zip": "*",
+        "ext-json": "*"
     }
 }

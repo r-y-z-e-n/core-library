@@ -55,7 +55,7 @@ class Ry_Zen
         self::init();
     }
 
-    public static function init(){
+    private static function init(){
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }

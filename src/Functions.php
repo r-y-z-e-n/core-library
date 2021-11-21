@@ -164,7 +164,7 @@ class Functions extends BaseFunctions
         $password   = sha1(Ry_Zen::$main->Encryption_Password);
         $salt       = sha1(mt_rand());
         $saltWithPassword = hash('sha256', $password, $salt);
-        $encryption = openssl_encrypt(self::safeString($data, false), Ry_Zen::$main->Encryption_Method, "$saltWithPassword", null, $iv);
+        $encryption = openssl_encrypt(self::safeString($data, false), Ry_Zen::$main->Encryption_Method, "$saltWithPassword", NULL, $iv);
         $keyChar    = "$iv:$salt:$encryption";
         if(strtolower(self::decrypt($keyChar)) == strtolower($data)){
             return $keyChar;
@@ -185,7 +185,7 @@ class Functions extends BaseFunctions
         $iv             = $components[0];
         $salt           = hash('sha256', $password,$components[1]);
         $encrypted_data = $components[2];
-        $decryption     = openssl_decrypt($encrypted_data, Ry_Zen::$main->Encryption_Method, $salt,null, $iv);
+        $decryption     = openssl_decrypt($encrypted_data, Ry_Zen::$main->Encryption_Method, $salt,NULL, $iv);
         if($decryption === false)
             return false;
         substr(self::safeString($decryption, false), 41);
