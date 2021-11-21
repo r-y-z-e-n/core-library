@@ -125,12 +125,15 @@ class Lazy
      */
     private static function sqlBackUp($folder_name, $tables = false): bool
     {
-        $query_tables = Ry_Zen::$main->dbBuilder->pdo->prepare('SHOW TABLES');
-        $query_tables->execute();
-
+        $query_tables = Ry_Zen::$main->dbBuilder->pdo->query('SHOW TABLES');
         while($row = $query_tables->fetch()){
-            $target_tables[]    =   $row->Tables_in_ryzen;
+            $row = (array) $row;
+            $target_tables[]    =   $row['Tables_in_'.strtolower($_ENV['database_name'])];
         }
+
+        /**
+         * @var $target_tables;
+         */
 
         if($tables !== false) {$target_tables = array_intersect($target_tables, $tables);}
 
