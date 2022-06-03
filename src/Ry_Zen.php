@@ -42,7 +42,7 @@ class Ry_Zen extends BaseConfiguration
         $this->appRootPath          =   Functions::safeString($_ENV['app_url'])             ??  "";
         $this->encryptionMethod     =   Functions::safeString($_ENV['encryption_method'])   ??  "AES-128-CBC";
         $this->tableUsersSessions   =   Functions::safeString($_ENV['table_sessions'])      ??  "users_sessions";
-        $this->encryptionPassword   =   Functions::safeString($_ENV['encryption_password']) ??  (new Application())->AppKey();
+        $this->encryptionPassword   =   (new Application())->AppKey();
         $this->dbBuilder            =   BaseConfiguration::initializeDB();
         $this->oAuth                =   BaseConfiguration::initializeOauth();
         self::$main                 =   $this;
