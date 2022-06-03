@@ -11,13 +11,9 @@ class BaseFunctions
      * @param $table
      * @return bool
      */
-
-    public static function checkTable($table): bool
-    {
+    public static function checkTable($table): bool {
         $statement = Ry_Zen::$main->dbBuilder->table($table)->check();
-        if(strtolower($statement->Msg_type) == 'error'){
-            return false;
-        }
+        if(strtolower($statement->Msg_type) == 'error') return false;
         return true;
     }
 }

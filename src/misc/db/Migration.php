@@ -8,7 +8,6 @@ class Migration
      * @param string $prefix
      * @return string
      */
-
     public static function users(string $prefix = ""): string
     {
         $tableName = $prefix.'users';

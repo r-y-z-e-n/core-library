@@ -17,9 +17,7 @@ class Session
                 $put = $_SESSION[$key] = $value;
             }
         }
-        if(is_string($sessionSet)){
-            $put = $_SESSION[$sessionSet] = $value;
-        }
+        if(is_string($sessionSet)) $put = $_SESSION[$sessionSet] = $value;
         return $put;
     }
 
@@ -29,9 +27,7 @@ class Session
      */
 
     public static function get($key){
-        if(self::has($key)){
-            return $_SESSION[$key];
-        }
+        if(self::has($key)) return $_SESSION[$key];
         return false;
     }
 
@@ -41,9 +37,7 @@ class Session
      */
 
     public static function has($key): bool{
-        if(isset($_SESSION[$key]) && $_SESSION[$key] !== "" && !empty($_SESSION[$key]) && !is_null($_SESSION[$key])){
-            return true;
-        }
+        if(isset($_SESSION[$key]) && $_SESSION[$key] !== "" && !empty($_SESSION[$key])) return true;
         return false;
     }
 
@@ -52,9 +46,7 @@ class Session
      */
 
     public static function forget($key){
-        if(self::has($key)){
-            unset($_SESSION[$key]);
-        }
+        if(self::has($key)) unset($_SESSION[$key]);
     }
 
     /**

@@ -12,16 +12,14 @@ class Application
     /**
      * @return false|string
      */
-
     public function AppKey(){
         $this->checkAndCreate();
         return $this->getApplicationKey();
     }
 
     /**
-     * PreFinned
+     * @return void
      */
-
     private function checkAndCreate(){
         FileSystem::checkCreateDir($this->keyPath);
         FileSystem::checkCreateFile($this->keyPath . '/' . '.htaccess', 'deny from all');
@@ -31,7 +29,6 @@ class Application
     /**
      * @return false|string
      */
-
     private function getApplicationKey(){
         if(file_exists($this->keyPath . '/app_key.php')){
             $application_key = FileSystem::getFileContent($this->keyPath . '/app_key.php');
@@ -43,7 +40,6 @@ class Application
     /**
      * @return false|string
      */
-
     private function generateNewKeyFile(){
        if(file_exists($this->keyPath . '/app_key.php') && empty(FileSystem::getFileContent($this->keyPath . '/app_key.php'))){
            $this->generateNewAppKey();
@@ -55,9 +51,8 @@ class Application
     }
 
     /**
-     * Deletes Key File
+     * @return void
      */
-
     private function generateNewAppKey(){
         unlink($this->keyPath . '/app_key.php');
     }

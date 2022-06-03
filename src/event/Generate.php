@@ -12,7 +12,6 @@ class Generate extends Token
      * @param int|null $keyLength
      * @return string
      */
-
     public static function key( int $keyLength = null): string{
         return base64_encode(openssl_random_pseudo_bytes((!is_null($keyLength)) ? $keyLength : 32));
     }
@@ -31,7 +30,6 @@ class Generate extends Token
      * @param int $passwordLength
      * @return string
      */
-
     public static function password(int $passwordLength = 8): string {
         $passwordCharacters = Functions::safeString(self::$alphabet . self::$alphaNumeric .  self::$numeric .  self::$character . self::$specialChar);
         $pass = array();

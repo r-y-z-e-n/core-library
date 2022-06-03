@@ -21,6 +21,7 @@
         "vlucas/phpdotenv": "^5.3",
         "ext-zip": "*",
         "ext-json": "*",
-        "ext-mysqli": "*"
+        "ext-mysqli": "*",
+      "ext-curl": "*"
     }
 }

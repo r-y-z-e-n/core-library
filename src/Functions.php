@@ -10,31 +10,28 @@ class Functions extends BaseFunctions
 {
 
     /**
-     * @param $string
+     * @param string $string
      * @param bool $breakString
      * @param int $strip
      * @return array|string|string[]
      */
 
-    public static function safeString($string, bool $breakString = true, int $strip = 0)
-    {
+    public static function safeString(string $string, bool $breakString = true, int $strip = 0) {
         $string = htmlspecialchars(self::cleanString(trim($string)), ENT_QUOTES);
 
-        if ($breakString == true) {
+        if ($breakString) {
             $string = str_replace('\r\n', " <br>", $string);
             $string = str_replace('\n\r', " <br>", $string);
             $string = str_replace('\r', " <br>", $string);
             $string = str_replace('\n', " <br>", $string);
         }
-        if($breakString == false){
+        if(!$breakString){
             $string = str_replace('\r\n', "", $string);
             $string = str_replace('\n\r', "", $string);
             $string = str_replace('\r', "", $string);
             $string = str_replace('\n', "", $string);
         }
-        if ($strip == 1) {
-            $string = stripslashes($string);
-        }
+        if ($strip == 1)  $string = stripslashes($string);
         return str_replace('&amp;#', '&#', $string);
     }
 
@@ -52,12 +49,11 @@ class Functions extends BaseFunctions
     }
 
     /**
-     * @param $string
+     * @param string $string
      * @return array|string|string[]|null
      */
 
-    public static function cleanString($string)
-    {
+    public static function cleanString(string $string) {
         return preg_replace("/&#?[a-z0-9]+;/i", "", $string);
     }
 
@@ -66,11 +62,9 @@ class Functions extends BaseFunctions
      * @throws Exception
      */
 
-    public static function generateCsrf():string
-    {
-        if(Session::has('csrf_token') == false){
-            Session::put('csrf_token',bin2hex(random_bytes(32)));
-        }
+    public static function generateCsrf():string {
+        $csrfToken = bin2hex(random_bytes(32));
+        if(!Session::has('csrf_token')) Session::put('csrf_token', $csrfToken);
         return Session::get('csrf_token');
     }
 
@@ -84,9 +78,7 @@ class Functions extends BaseFunctions
     public static function checkCsrf(string $token, bool $is_csrf_one_use = false): bool
     {
         if (Session::has('csrf_token') && Session::get('csrf_token') !== '' && hash_equals($token, Session::get('csrf_token'))) {
-            if($is_csrf_one_use){
-                Session::forget('csrf_token') && self::generateCsrf();
-            }
+            if($is_csrf_one_use) Session::forget('csrf_token') && self::generateCsrf();
             return true;
         }
         return false;
@@ -99,45 +91,37 @@ class Functions extends BaseFunctions
      */
 
     public static function createHmac(string $string){
-        if(empty($string)){
-            return "Missing Parameter";
-        }
+        if(empty($string)) return "Missing Parameter";
         return hash_hmac('sha256', $string, self::generateCsrf());
     }
 
     /**
      * @param string $string
-     * @param $token
+     * @param string $token
      * @return bool
      * @throws Exception
      */
 
-    public static function checkHmac(string $string, $token): bool
-    {
-        if(hash_equals(self::createHmac($string), $token)){
-            return true;
-        }
+    public static function checkHmac(string $string, string $token): bool {
+        if(hash_equals(self::createHmac($string), $token)) return true;
         return false;
     }
 
     /**
-     * @param $url
+     * @param string $url
      */
 
-    public static function redirect($url)
-    {
+    public static function redirect(string  $url) {
         header("Location:".$url);
     }
 
     /**
-     * @param $url
+     * @param string $url
      * @param bool $isPOST
      * @return bool|string
      */
 
-    public static function curlUrl($url, bool $isPOST = false)
-    {
-
+    public static function curlUrl(string $url, bool $isPOST = false) {
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_POST, $isPOST);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
@@ -158,19 +142,15 @@ class Functions extends BaseFunctions
      * @throws Exception
      */
 
-    public static function encrypt($data): string
-    {
+    public static function encrypt($data): string {
         $iv         = substr(sha1(mt_rand()), 0, 16);
-        $password   = sha1(Ry_Zen::$main->Encryption_Password);
+        $password   = sha1(Ry_Zen::$main->encryptionPassword);
         $salt       = sha1(mt_rand());
         $saltWithPassword = hash('sha256', $password, $salt);
-        $encryption = openssl_encrypt(self::safeString($data, false), Ry_Zen::$main->Encryption_Method, "$saltWithPassword", NULL, $iv);
+        $encryption = openssl_encrypt(self::safeString($data, false), Ry_Zen::$main->encryptionMethod, "$saltWithPassword", NULL, $iv);
         $keyChar    = "$iv:$salt:$encryption";
-        if(strtolower(self::decrypt($keyChar)) == strtolower($data)){
-            return $keyChar;
-        }else{
-            throw new Exception('Encryption Failed ReTRY');
-        }
+        if(strtolower(self::decrypt($keyChar)) == strtolower($data)) return $keyChar;
+        throw new Exception('Encryption failed retry !!');
     }
 
     /**
@@ -179,26 +159,24 @@ class Functions extends BaseFunctions
      */
 
     public static function decrypt($encryptedData){
-
-        $password       = sha1(Ry_Zen::$main->Encryption_Password);
+        $password       = sha1(Ry_Zen::$main->encryptionPassword);
         $components     = explode(':', $encryptedData);
         $iv             = $components[0];
         $salt           = hash('sha256', $password,$components[1]);
         $encrypted_data = $components[2];
-        $decryption     = openssl_decrypt($encrypted_data, Ry_Zen::$main->Encryption_Method, $salt,NULL, $iv);
-        if($decryption === false)
-            return false;
+        $decryption     = openssl_decrypt($encrypted_data, Ry_Zen::$main->encryptionMethod, $salt,NULL, $iv);
+        if(!$decryption) return false;
         substr(self::safeString($decryption, false), 41);
         return $decryption;
     }
 
     /**
-     * @param $string
-     * @param $length
+     * @param string $string
+     * @param int $length
      * @return string
      */
 
-    public static function stripLongString($string, $length): string{
+    public static function stripLongString(string  $string, int $length): string{
         $string = strip_tags($string);
         if (strlen($string) > $length) {
             $stringCut = substr($string, 0, $length);
@@ -247,8 +225,7 @@ class Functions extends BaseFunctions
      * @return array
      */
 
-    public static function getUserBrowser(): array
-    {
+    public static function getUserBrowser(): array {
         $u_agent        = $_SERVER['HTTP_USER_AGENT'];
         $browser_name   = 'Unknown';
         $platform       = 'Unknown';
@@ -321,8 +298,7 @@ class Functions extends BaseFunctions
      * @return mixed
      */
 
-    public static function getUserIp()
-    {
+    public static function getUserIp() {
         if (!empty($_SERVER['HTTP_X_FORWARDED']) && self::validateIp($_SERVER['HTTP_X_FORWARDED'])) {
             return $_SERVER['HTTP_X_FORWARDED'];
         }
@@ -371,5 +347,23 @@ class Functions extends BaseFunctions
                 return false;
         }
         return true;
+    }
+
+    /**
+     * @param array $data
+     * @param string $table
+     * @param string $logicalOperator
+     * @return bool
+     */
+    public static function checkValueInTable(array $data, string $table, string $logicalOperator = "AND") : bool{
+        if(!in_array(strtoupper($logicalOperator),["AND","OR"])) return false;
+
+        $attributes = array_keys($data);
+        $clause     = ' WHERE ' . implode(strtoupper(" ".$logicalOperator." "), array_map(fn($attr) => "$attr = :$attr", $attributes));
+        $statement  = Ry_Zen::$main->dbBuilder->pdo->prepare("SELECT * FROM"." $table $clause");
+
+        foreach ($data as $key => $value) $statement->bindValue(":$key", $value);
+        if ($statement->execute() && $statement->rowCount() > 0)  return true;
+        return false;
     }
 }

@@ -7,7 +7,6 @@ class Debugging
     /**
      * @param bool $type
      */
-
     public static function preventDebugging(bool $type){
         if( $type === true){
             ini_set('gd.jpeg_ignore_warning', 1);

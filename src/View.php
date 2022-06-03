@@ -32,29 +32,24 @@ class View extends Cache
                 self::$makeNewCache = true;
             }
         }
-        if(is_array($viewOptions)){
-            foreach ($viewOptions as $key => $value){
-                $$key = $value;
-            }
-        }
+        if(is_array($viewOptions)) foreach ($viewOptions as $key => $value) $$key = $value;
+
         ob_start();
-        $page = Ry_Zen::$main->View_Path . $viewPath . '.' . Ry_Zen::$main->View_Extension;
+        $page = Ry_Zen::$main->viewPath . $viewPath . '.' . Ry_Zen::$main->viewEngine;
         require "{$page}";
         self::$viewContent = ob_get_contents();
         ob_end_clean();
-        if(self::$makeNewCache == true){ self::view($viewPath, self::$viewContent); }
+        if(self::$makeNewCache){ self::view($viewPath, self::$viewContent); }
         return self::$viewContent;
     }
 
     /**
-     * @param $viewPath
+     * @param string $viewPath
      */
 
-    public static function cleanCache( $viewPath ){
+    public static function cleanCache( string $viewPath = "" ){
         self::openCacheDirectory();
-        if(Auth::check()){
-            self::markDownViewFile($viewPath, Auth::getUserId());
-        }
+        if(Auth::check()) self::markDownViewFile($viewPath, Auth::getUserId());
         if(Cookie::has( $viewPath )){
             self::markDownViewFile( $viewPath,Cookie::get( $viewPath ));
             Cookie::forget( $viewPath );

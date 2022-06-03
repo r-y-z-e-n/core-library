@@ -26,16 +26,14 @@ class Cache
      * @param $viewPath
      * @param $viewContent
      */
-
-    protected static function view($viewPath , $viewContent )
-    {
-        if(Auth::check() == false){
-            if (Cookie::has($viewPath) == true) {
+    protected static function view($viewPath , $viewContent ){
+        if(!Auth::check()){
+            if (Cookie::has($viewPath)) {
                 if (!file_exists('./cache/' . $viewPath . '-' . Cookie::get($viewPath) . '.res')) {
                     Cookie::forget($viewPath);
                 }
             }
-            if (Cookie::has($viewPath) == false) {
+            if (!Cookie::has($viewPath)) {
                 FileSystem::checkCreateDir('./cache/' . self::makeDirName($viewPath));
                 $session = md5(uniqid());
                 Cookie::put($viewPath, $session);
@@ -43,8 +41,8 @@ class Cache
                 file_put_contents('./cache/' . $viewPath . '-' . $session . '.res', $viewContent);
             }
         }
-        if(Auth::check() == true){
-            if(Cookie::has($viewPath) == true){
+        if(Auth::check()){
+            if(Cookie::has($viewPath)){
                 if (file_exists('./cache/' . $viewPath . '-' . Cookie::get($viewPath) . '.res')) {
                     unlink('./cache/' . $viewPath . '-' . Cookie::get($viewPath) . '.res');
                 }
@@ -61,7 +59,6 @@ class Cache
      * @param $namedPreFix
      * @return bool
      */
-
     protected static function markDownViewFile($viewPath, $namedPreFix ):bool {
         if(file_exists('./cache/' . $viewPath . '-' . $namedPreFix . '.res')){
             unlink('./cache/' . $viewPath . '-' . $namedPreFix . '.res');
@@ -73,7 +70,6 @@ class Cache
      * @param $viewPath
      * @return false|string
      */
-
     protected static function makeDirName( $viewPath ){
         $explodedDir = explode('/', $viewPath);
         if(count($explodedDir) > 1){

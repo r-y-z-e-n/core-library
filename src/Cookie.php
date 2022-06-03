@@ -23,41 +23,35 @@ class Cookie
                 $put = setcookie($key, Functions::safeString($cookieValue), $cookieExpiry, $cookiePath, $cookieDomain, $cookieSecurity);
             }
         }
-        if(is_string($cookieName)){
-            $put = setcookie($cookieName, Functions::safeString($cookieValue), $cookieExpiry, $cookiePath, $cookieDomain, $cookieSecurity);
-        }
+        if(is_string($cookieName)) $put = setcookie($cookieName, Functions::safeString($cookieValue), $cookieExpiry, $cookiePath, $cookieDomain, $cookieSecurity);
         return $put;
     }
 
     /**
-     * @param $key
+     * @param string $key
      * @return array|string|string[]
      */
 
-    public static function get($key){
-        if(self::has($key)){
-            return Functions::safeString($_COOKIE[$key]);
-        }
+    public static function get(string $key){
+        if(self::has($key)) return Functions::safeString($_COOKIE[$key]);
         return false;
     }
 
     /**
-     * @param $key
+     * @param string $key
      * @return bool
      */
 
-    public static function has($key): bool {
-        if(isset($_COOKIE[$key]) && $_COOKIE[$key] !== "" && !empty($_COOKIE[$key]) && !is_null($_COOKIE[$key])){
-            return true;
-        }
+    public static function has(string  $key): bool {
+        if(isset($_COOKIE[$key]) && $_COOKIE[$key] !== "" && !empty($_COOKIE[$key])) return true;
         return false;
     }
 
     /**
-     * @param $key
+     * @param string $key
      */
 
-    public static function forget($key){
+    public static function forget(string $key){
         if(self::has($key)){
             $_COOKIE[$key] = '';
             unset($_COOKIE[$key]);

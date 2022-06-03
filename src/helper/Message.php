@@ -10,7 +10,6 @@ class Message
      * @param $messageKey
      * @return string
      */
-
     public static function validation( $messageKey ) : string{
         if($messageKey == 'required'){
             return ValidationMessage::$required;

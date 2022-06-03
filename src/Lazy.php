@@ -23,8 +23,7 @@ class Lazy
      * @return bool
      */
 
-    protected static function dir_establish(): bool
-    {
+    protected static function dir_establish(): bool {
         /**
          * Check and Create Directory.
          */
@@ -52,8 +51,7 @@ class Lazy
      * @return string
      */
 
-    protected static function folderName(): string
-    {
+    protected static function folderName(): string {
         return self::$rootFolder . "/" . date('Y-m-d') . '/' . time();
     }
 
@@ -63,18 +61,14 @@ class Lazy
      */
 
     public static function migrateDefaults(string $tablePrefix = ""): bool{
-        if(!empty($tablePrefix)){
-            $tablePrefix .= '_';
-        }
+        if(!empty($tablePrefix)) $tablePrefix .= '_';
         if(!BaseFunctions::checkTable($tablePrefix.'users')){
             if(Ry_Zen::$main->dbBuilder->pdo->exec(Migration::users($tablePrefix))){
                 return true;
             }
         }
         if(!BaseFunctions::checkTable($tablePrefix.'users_sessions')){
-            if(Ry_Zen::$main->dbBuilder->pdo->exec(Migration::user_session($tablePrefix))){
-                return true;
-            }
+            if(Ry_Zen::$main->dbBuilder->pdo->exec(Migration::user_session($tablePrefix))) return true;
         }
         return false;
     }
@@ -83,11 +77,8 @@ class Lazy
      * @return bool
      */
 
-    public static function backupEverything(): bool
-    {
-        if(self::dir_establish() && self::sqlBackUp(self::folderName()) && self::backupFiles(self::folderName())){
-            return true;
-        }
+    public static function backupEverything(): bool {
+        if(self::dir_establish() && self::sqlBackUp(self::folderName()) && self::backupFiles(self::folderName())) return true;
         return false;
     }
 
@@ -102,9 +93,7 @@ class Lazy
         $rootPath = realpath('./');
         $zip      = new ZipArchive();
         $open     = $zip->open($folder_name . '/Files/Files-' . date('Y-m-d') . '.zip', ZipArchive::CREATE | ZipArchive::OVERWRITE);
-        if ($open !== true) {
-            return false;
-        }
+        if ($open !== true)  return false;
         $files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($rootPath), RecursiveIteratorIterator::LEAVES_ONLY);
         foreach ($files as $name => $file) {
             if (!preg_match('/\b'.self::$rootFolder.'\b/', $file)) {
@@ -121,10 +110,10 @@ class Lazy
 
     /**
      * @param $folder_name
-     * @param $tables
+     * @param bool $tables
      * @return bool
      */
-    private static function sqlBackUp($folder_name, $tables = false): bool
+    private static function sqlBackUp($folder_name, bool $tables = false): bool
     {
         $mysqli = new mysqli($_ENV['database_hostname'], $_ENV['database_username'], $_ENV['database_password'], $_ENV['database_name']);
         $mysqli->select_db($_ENV['database_name']);
@@ -133,12 +122,10 @@ class Lazy
         while ($row = $queryTables->fetch_row()) {
             $target_tables[] = $row[0];
         }
-        if ($tables !== false) {
-            $target_tables = array_intersect($target_tables, $tables);
-        }
+        if ($tables) $target_tables = array_intersect($target_tables, $tables);
         $content = "-- phpMyAdmin SQL Dump
 -- http://www.phpmyadmin.net
---
+--  
 -- Host Connection Info: " . $mysqli->host_info . "
 -- Generation Time: " . date('F d, Y \a\t H:i A ( e )') . "
 -- Server version: " . mysqli_get_server_info($mysqli) . "
@@ -151,7 +138,7 @@ SET time_zone = \"+00:00\";\n
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;\n\n";
         foreach ($target_tables as $table) {
-            $result        = $mysqli->query('SELECT * FROM ' . $table);
+            $result        = $mysqli->query('SELECT * FROM' . ' ' . $table);
             $fields_amount = $result->field_count;
             $rows_num      = $mysqli->affected_rows;
             $res           = $mysqli->query('SHOW CREATE TABLE ' . $table);

@@ -93,7 +93,7 @@ class Validate extends Application
             $acceptedDateFormat = str_replace('/','-', $fieldOnMethod);
             $acceptedDateFormat = str_replace('.', '-', $fieldOnMethod);
             $d = DateTime::createFromFormat('Y-m-d', $acceptedDateFormat);
-            if(($d && $d->format('Y-m-d') === $acceptedDateFormat) == false){
+            if(!($d && $d->format('Y-m-d') === $acceptedDateFormat)){
                 return str_replace('{key}',self::get_key($key, $validationRule), Message::validation('date'));
             }
         }
